@@ -44,6 +44,7 @@
     <Compile Include="ICommandBus.cs" />
     <Compile Include="CommandContext.cs" />
     <Compile Include="ICommandHandler.cs" />
+    <Compile Include="ICommandInvoker.cs" />
     <Compile Include="ICommandObserver.cs" />
     <Compile Include="ICommandValidator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

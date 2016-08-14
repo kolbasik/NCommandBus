@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using FakeItEasy;
 using kolbasik.NCommandBus.Core;
@@ -11,14 +12,14 @@ namespace Host.Tests
     public sealed class HostCommandBusTests
     {
         private readonly Fixture fixture;
-        private readonly HostCommandBus hostCommandBus;
+        private readonly HostCommandInvoker hostCommandInvoker;
         private readonly IServiceProvider serviceProvider;
 
         public HostCommandBusTests()
         {
             fixture = new Fixture();
             serviceProvider = A.Fake<IServiceProvider>();
-            hostCommandBus = new HostCommandBus(serviceProvider);
+            hostCommandInvoker = new HostCommandInvoker(serviceProvider);
         }
 
         [Fact]
@@ -28,12 +29,12 @@ namespace Host.Tests
             var command = fixture.Create<TestCommand>();
             var expected = fixture.Create<TestResult>();
 
-            var commandHandler = A.Fake<ICommandHandler<TestCommand>>();
+            var commandHandler = A.Fake<ICommandHandler<TestCommand, TestResult>>();
             A.CallTo(() => commandHandler.Handle(command)).Returns(expected);
-            A.CallTo(() => serviceProvider.GetService(typeof (ICommandHandler<TestCommand>))).Returns(commandHandler);
+            A.CallTo(() => serviceProvider.GetService(typeof (ICommandHandler<TestCommand, TestResult>))).Returns(commandHandler);
 
             // act
-            var actual = await hostCommandBus.Send<TestResult, TestCommand>(command).ConfigureAwait(false);
+            var actual = await hostCommandInvoker.Invoke<TestResult, TestCommand>(command, CancellationToken.None).ConfigureAwait(false);
 
             // assert
             Assert.Equal(expected, actual);
@@ -49,7 +50,7 @@ namespace Host.Tests
             var actual =
                 await
                     Assert.ThrowsAsync<InvalidOperationException>(
-                        () => hostCommandBus.Send<TestResult, TestCommand>(command)).ConfigureAwait(false);
+                        () => hostCommandInvoker.Invoke<TestResult, TestCommand>(command, CancellationToken.None)).ConfigureAwait(false);
 
             // assert
             Assert.NotNull(actual);

@@ -2,8 +2,8 @@
 
 namespace kolbasik.NCommandBus.Core
 {
-    public interface ICommandHandler<in TCommand>
+    public interface ICommandHandler<in TCommand, TResult>
     {
-        Task<object> Handle(TCommand command);
+        Task<TResult> Handle(TCommand command);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Threading;
 using System.Threading.Tasks;
 using FakeItEasy;
 using kolbasik.NCommandBus.Core;
@@ -11,13 +12,15 @@ namespace Core.Tests
 {
     public class CommandBusTests
     {
-        private readonly CommandBus commandBus;
         private readonly Fixture fixture;
+        private readonly ICommandInvoker commandInvoker;
+        private readonly CommandBus commandBus;
 
         public CommandBusTests()
         {
             fixture = new Fixture();
-            commandBus = A.Fake<CommandBus>();
+            commandInvoker = A.Fake<ICommandInvoker>();
+            commandBus = new CommandBus(commandInvoker);
         }
 
         [Fact]
@@ -47,9 +50,7 @@ namespace Core.Tests
             var command = fixture.Create<TestCommand>();
             var expected = fixture.Create<TestResult>();
 
-            A.CallTo(commandBus).Where(x => x.Method.Name == "Execute")
-                .WithReturnType<Task<TestResult>>()
-                .Returns(expected);
+            A.CallTo(() => commandInvoker.Invoke<TestResult, TestCommand>(command, CancellationToken.None)).Returns(expected);
 
             // act
             var actual = await commandBus.Send<TestResult, TestCommand>(command).ConfigureAwait(false);
@@ -71,9 +72,7 @@ namespace Core.Tests
             var commandObserver = A.Fake<ICommandObserver>();
             commandBus.CommandObservers.Add(commandObserver);
 
-            A.CallTo(commandBus).Where(x => x.Method.Name == "Execute")
-                .WithReturnType<Task<TestResult>>()
-                .Returns(commandResult);
+            A.CallTo(() => commandInvoker.Invoke<TestResult, TestCommand>(command, CancellationToken.None)).Returns(commandResult);
 
             var actual = new List<int>();
             A.CallTo(() => commandObserver.PreExecute(A<CommandContext>.Ignored))

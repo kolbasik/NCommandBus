@@ -1,9 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace kolbasik.NCommandBus.Core
 {
     public interface ICommandBus
     {
-        Task<TResult> Send<TResult, TCommand>(TCommand command);
+        Task<TResult> Send<TResult, TCommand>(TCommand command, CancellationToken cancellationToken);
     }
 }

@@ -1,30 +1,30 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using kolbasik.NCommandBus.Core;
 
 namespace kolbasik.NCommandBus.Host
 {
-    public sealed class HostCommandBus : CommandBus
+    public sealed class HostCommandInvoker : ICommandInvoker
     {
         private readonly IServiceProvider serviceProvider;
 
-        public HostCommandBus(IServiceProvider serviceProvider)
+        public HostCommandInvoker(IServiceProvider serviceProvider)
         {
             if (serviceProvider == null)
                 throw new ArgumentNullException(nameof(serviceProvider));
             this.serviceProvider = serviceProvider;
         }
 
-        protected override async Task<TResult> Execute<TResult, TCommand>(TCommand command)
+        public Task<TResult> Invoke<TResult, TCommand>(TCommand command, CancellationToken cancellationToken)
         {
-            var commandHandlerType = typeof(ICommandHandler<TCommand>);
-            var commandHandler = serviceProvider.GetService(commandHandlerType) as ICommandHandler<TCommand>;
+            var commandHandlerType = typeof(ICommandHandler<TCommand, TResult>);
+            var commandHandler = serviceProvider.GetService(commandHandlerType) as ICommandHandler<TCommand, TResult>;
             if (commandHandler == null)
             {
                 throw new InvalidOperationException($"Could not resolve the {commandHandlerType.FullName} type.");
             }
-            var result = await commandHandler.Handle(command).ConfigureAwait(false);
-            return (TResult) result;
+            return commandHandler.Handle(command);
         }
     }
 }
