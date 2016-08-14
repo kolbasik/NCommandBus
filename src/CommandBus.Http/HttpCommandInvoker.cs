@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Formatting;
@@ -11,20 +12,19 @@ namespace kolbasik.NCommandBus.Http
     public sealed class HttpCommandInvoker : ICommandInvoker, IDisposable
     {
         public HttpCommandInvoker(Uri requestUri)
-            : this(requestUri, new MediaTypeFormatterCollection())
+            : this(requestUri, new HttpClientHandler(), new MediaTypeFormatterCollection())
         {
         }
 
-        public HttpCommandInvoker(Uri requestUri, MediaTypeFormatterCollection mediaTypeFormatterCollection)
+        public HttpCommandInvoker(Uri requestUri, HttpMessageHandler httpMessageHandler, MediaTypeFormatterCollection mediaTypeFormatterCollection)
         {
-            if (requestUri == null)
-                throw new ArgumentNullException(nameof(requestUri));
-            if (mediaTypeFormatterCollection == null)
-                throw new ArgumentNullException(nameof(mediaTypeFormatterCollection));
+            if (requestUri == null) throw new ArgumentNullException(nameof(requestUri));
+            if (httpMessageHandler == null) throw new ArgumentNullException(nameof(httpMessageHandler));
+            if (mediaTypeFormatterCollection == null) throw new ArgumentNullException(nameof(mediaTypeFormatterCollection));
             RequestUri = requestUri;
             MediaTypeFormatterCollection = mediaTypeFormatterCollection;
             MediaTypeFormatter = MediaTypeFormatterCollection.JsonFormatter;
-            HttpClient = new HttpClient();
+            HttpClient = new HttpClient(httpMessageHandler);
         }
 
         public Uri RequestUri { get; }
@@ -32,27 +32,40 @@ namespace kolbasik.NCommandBus.Http
         public MediaTypeFormatter MediaTypeFormatter { get; set; }
         public MediaTypeFormatterCollection MediaTypeFormatterCollection { get; }
 
+        public async Task<TResult> Invoke<TResult, TCommand>(TCommand command, CancellationToken cancellationToken)
+        {
+            var requestContent = new ObjectContent<TCommand>(command, MediaTypeFormatter);
+            requestContent.Headers.Add(@"X-RPC-CommandType", GetTypeName(typeof (TCommand)));
+            requestContent.Headers.Add(@"X-RPC-ResultType", GetTypeName(typeof(TResult)));
+
+            var post = HttpClient.PostAsync(RequestUri.AbsoluteUri, requestContent, cancellationToken);
+            var response = await post.ConfigureAwait(false);
+            response.EnsureSuccessStatusCode();
+
+            var responseContent = response.Content;
+            if (responseContent != null)
+            {
+                IEnumerable<string> values;
+                var resultType = responseContent.Headers.TryGetValues(@"X-RPC-ResultType", out values) ? values.Select(GetType).FirstOrDefault() : typeof(TResult);
+                var result = await responseContent.ReadAsAsync(resultType, MediaTypeFormatterCollection).ConfigureAwait(false);
+                return (TResult)result;
+            }
+            return default(TResult);
+        }
+
         public void Dispose()
         {
             HttpClient.Dispose();
         }
 
-        public async Task<TResult> Invoke<TResult, TCommand>(TCommand command, CancellationToken cancellationToken)
+        private static Type GetType(string typeName)
         {
-            var commandType = typeof(TCommand);
-            var requestContent = new ObjectContent<TCommand>(command, MediaTypeFormatter);
-            requestContent.Headers.Add(@"X-RPC-CommandType", commandType.FullName);
+            return Type.GetType(typeName, false, true);
+        }
 
-            var post = HttpClient.PostAsync(RequestUri.AbsoluteUri, requestContent, cancellationToken);
-            var response = await post.ConfigureAwait(false);
-            var responseContent = response.Content;
-
-            response.EnsureSuccessStatusCode();
-
-            var httpResultType = responseContent.Headers.GetValues(@"X-RPC-ResultType").FirstOrDefault();
-            var resultType = Type.GetType(httpResultType, false, true) ?? typeof(TResult);
-            var result = await responseContent.ReadAsAsync(resultType, MediaTypeFormatterCollection).ConfigureAwait(false);
-            return (TResult)result;
+        private static string GetTypeName(Type type)
+        {
+            return $@"{type.FullName}, {type.Assembly.FullName}";
         }
     }
 }

@@ -9,13 +9,13 @@ using Xunit;
 
 namespace Host.Tests
 {
-    public sealed class HostCommandBusTests
+    public sealed class HostCommandInvokerTests
     {
         private readonly Fixture fixture;
-        private readonly HostCommandInvoker hostCommandInvoker;
         private readonly IServiceProvider serviceProvider;
+        private readonly HostCommandInvoker hostCommandInvoker;
 
-        public HostCommandBusTests()
+        public HostCommandInvokerTests()
         {
             fixture = new Fixture();
             serviceProvider = A.Fake<IServiceProvider>();
