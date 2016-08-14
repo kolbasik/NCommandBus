@@ -4,7 +4,7 @@ namespace kolbasik.NCommandBus.Core
 {
     public interface ICommandObserver
     {
-        Task PreExecute(CommandContext context);
-        Task PostExecute(CommandContext context);
+        Task PreExecute<TCommand, TResult>(CommandContext<TCommand, TResult> context);
+        Task PostExecute<TCommand, TResult>(CommandContext<TCommand, TResult> context);
     }
 }

@@ -4,6 +4,6 @@ namespace kolbasik.NCommandBus.Core
 {
     public interface ICommandValidator
     {
-        Task Validate(CommandContext context);
+        Task Validate<TCommand, TResult>(CommandContext<TCommand, TResult> context);
     }
 }

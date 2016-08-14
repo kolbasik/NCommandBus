@@ -3,16 +3,16 @@ using System.ComponentModel.DataAnnotations;
 
 namespace kolbasik.NCommandBus.Core
 {
-    public sealed class CommandContext
+    public sealed class CommandContext<TCommand, TResult>
     {
-        public CommandContext(object command)
+        public CommandContext(TCommand command)
         {
             Command = command;
             ValidationResults = new List<ValidationResult>();
         }
 
-        public object Command { get; }
-        public object Result { get; set; }
+        public TCommand Command { get; }
+        public TResult Result { get; set; }
         public List<ValidationResult> ValidationResults { get; }
     }
 }

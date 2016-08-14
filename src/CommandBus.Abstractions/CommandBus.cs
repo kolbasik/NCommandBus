@@ -27,7 +27,7 @@ namespace kolbasik.NCommandBus.Core
 
         public async Task<TResult> Send<TResult, TCommand>(TCommand command, CancellationToken cancellationToken)
         {
-            var context = new CommandContext(command);
+            var context = new CommandContext<TCommand, TResult>(command);
 
             foreach (var commandObserver in CommandObservers)
                 await commandObserver.PreExecute(context).ConfigureAwait(false);

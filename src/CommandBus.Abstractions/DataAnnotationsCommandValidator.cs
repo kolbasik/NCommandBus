@@ -8,7 +8,7 @@ namespace kolbasik.NCommandBus.Core
         public static readonly DataAnnotationsCommandValidator Instance = new DataAnnotationsCommandValidator();
         private static readonly Task Done = Task.FromResult(1);
 
-        public Task Validate(CommandContext context)
+        public Task Validate<TCommand, TResult>(CommandContext<TCommand, TResult> context)
         {
             var validationContext = new ValidationContext(context.Command);
             Validator.TryValidateObject(context.Command, validationContext, context.ValidationResults, true);

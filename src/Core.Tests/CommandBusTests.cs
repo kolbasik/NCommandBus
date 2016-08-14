@@ -75,11 +75,11 @@ namespace Core.Tests
             A.CallTo(() => commandInvoker.Invoke<TestResult, TestCommand>(command, CancellationToken.None)).Returns(commandResult);
 
             var actual = new List<int>();
-            A.CallTo(() => commandObserver.PreExecute(A<CommandContext>.Ignored))
+            A.CallTo(() => commandObserver.PreExecute(A<CommandContext<TestCommand, TestResult>>.Ignored))
                 .Invokes(x => actual.Add(1)).Returns(Task.FromResult(1));
-            A.CallTo(() => commandValidator.Validate(A<CommandContext>.Ignored))
+            A.CallTo(() => commandValidator.Validate(A<CommandContext<TestCommand, TestResult>>.Ignored))
                 .Invokes(x => actual.Add(2)).Returns(Task.FromResult(1));
-            A.CallTo(() => commandObserver.PostExecute(A<CommandContext>.Ignored))
+            A.CallTo(() => commandObserver.PostExecute(A<CommandContext<TestCommand, TestResult>>.Ignored))
                 .Invokes(x => actual.Add(3)).Returns(Task.FromResult(1));
 
             var expected = new[] {1, 2, 3};
