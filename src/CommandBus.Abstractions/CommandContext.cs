@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace kolbasik.NCommandBus.Core
+namespace kolbasik.NCommandBus.Abstractions
 {
     public sealed class CommandContext<TCommand, TResult>
     {

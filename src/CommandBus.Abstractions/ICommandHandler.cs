@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace kolbasik.NCommandBus.Core
+namespace kolbasik.NCommandBus.Abstractions
 {
     public interface ICommandHandler<in TCommand, TResult>
     {

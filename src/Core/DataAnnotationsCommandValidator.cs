@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using kolbasik.NCommandBus.Abstractions;
 
 namespace kolbasik.NCommandBus.Core
 {

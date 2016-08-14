@@ -60,9 +60,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CommandBus.Abstractions\Core.csproj">
+    <ProjectReference Include="..\CommandBus.Abstractions\Abstractions.csproj">
       <Project>{C4BC8DB5-9124-4469-81AB-6C6439501175}</Project>
-      <Name>Core</Name>
+      <Name>Abstractions</Name>
     </ProjectReference>
     <ProjectReference Include="..\CommandBus.Host\Host.csproj">
       <Project>{F37DB902-1CC1-466F-85FA-B18AFE5CCA39}</Project>

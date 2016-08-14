@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using FakeItEasy;
-using kolbasik.NCommandBus.Core;
+using kolbasik.NCommandBus.Abstractions;
 using kolbasik.NCommandBus.Host;
 using Ploeh.AutoFixture;
 using Xunit;

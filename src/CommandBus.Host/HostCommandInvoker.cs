@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using kolbasik.NCommandBus.Core;
+using kolbasik.NCommandBus.Abstractions;
 
 namespace kolbasik.NCommandBus.Host
 {

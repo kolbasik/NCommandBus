@@ -7,8 +7,8 @@
     <ProjectGuid>{C4BC8DB5-9124-4469-81AB-6C6439501175}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>kolbasik.NCommandBus.Core</RootNamespace>
-    <AssemblyName>kolbasik.NCommandBus.Core</AssemblyName>
+    <RootNamespace>kolbasik.NCommandBus.Abstractions</RootNamespace>
+    <AssemblyName>kolbasik.NCommandBus.Abstractions</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -38,9 +38,6 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="CommandBus.cs" />
-    <Compile Include="CommandBusValidationException.cs" />
-    <Compile Include="DataAnnotationsCommandValidator.cs" />
     <Compile Include="ICommandBus.cs" />
     <Compile Include="CommandContext.cs" />
     <Compile Include="ICommandHandler.cs" />

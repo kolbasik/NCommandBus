@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using System.Threading.Tasks;
 using FakeItEasy;
+using kolbasik.NCommandBus.Abstractions;
 using kolbasik.NCommandBus.Core;
 using Ploeh.AutoFixture;
 using Xunit;
@@ -75,9 +76,9 @@ namespace Core.Tests
             A.CallTo(() => commandInvoker.Invoke<TestResult, TestCommand>(command, CancellationToken.None)).Returns(commandResult);
 
             var actual = new List<int>();
-            A.CallTo(() => commandObserver.PreExecute(A<CommandContext<TestCommand, TestResult>>.Ignored))
-                .Invokes(x => actual.Add(1)).Returns(Task.FromResult(1));
             A.CallTo(() => commandValidator.Validate(A<CommandContext<TestCommand, TestResult>>.Ignored))
+                .Invokes(x => actual.Add(1)).Returns(Task.FromResult(1));
+            A.CallTo(() => commandObserver.PreExecute(A<CommandContext<TestCommand, TestResult>>.Ignored))
                 .Invokes(x => actual.Add(2)).Returns(Task.FromResult(1));
             A.CallTo(() => commandObserver.PostExecute(A<CommandContext<TestCommand, TestResult>>.Ignored))
                 .Invokes(x => actual.Add(3)).Returns(Task.FromResult(1));

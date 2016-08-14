@@ -66,13 +66,20 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CommandBus.Abstractions\Core.csproj">
-      <Project>{c4bc8db5-9124-4469-81ab-6c6439501175}</Project>
-      <Name>Core</Name>
-    </ProjectReference>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CommandBus.Abstractions\Abstractions.csproj">
+      <Project>{c4bc8db5-9124-4469-81ab-6c6439501175}</Project>
+      <Name>Abstractions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Project>{bccabe8e-137e-4d46-a005-bfbacac0ed90}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

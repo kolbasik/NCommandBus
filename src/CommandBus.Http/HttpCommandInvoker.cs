@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Threading;
 using System.Threading.Tasks;
-using kolbasik.NCommandBus.Core;
+using kolbasik.NCommandBus.Abstractions;
 
 namespace kolbasik.NCommandBus.Http
 {

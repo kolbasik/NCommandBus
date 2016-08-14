@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using kolbasik.NCommandBus.Abstractions;
 
 namespace kolbasik.NCommandBus.Core
 {
@@ -29,14 +30,15 @@ namespace kolbasik.NCommandBus.Core
         {
             var context = new CommandContext<TCommand, TResult>(command);
 
-            foreach (var commandObserver in CommandObservers)
-                await commandObserver.PreExecute(context).ConfigureAwait(false);
-
             foreach (var commandValidator in CommandValidators)
                 await commandValidator.Validate(context).ConfigureAwait(false);
 
             if (context.ValidationResults.Count > 0)
                 throw new CommandBusValidationException(context.Command, context.ValidationResults);
+
+
+            foreach (var commandObserver in CommandObservers)
+                await commandObserver.PreExecute(context).ConfigureAwait(false);
 
             context.Result = await commandInvoker.Invoke<TResult, TCommand>(command, cancellationToken).ConfigureAwait(false);
 
