@@ -7,8 +7,8 @@
     <ProjectGuid>{47FEE9B1-D7B2-4297-ABF0-015187A96B60}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Http.Tests</RootNamespace>
-    <AssemblyName>Http.Tests</AssemblyName>
+    <RootNamespace>kolbasik.NCommandBus.Http.Tests</RootNamespace>
+    <AssemblyName>kolbasik.NCommandBus.Http.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

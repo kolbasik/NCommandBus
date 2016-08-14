@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -10,11 +9,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using FakeItEasy;
 using FakeItEasy.Configuration;
-using kolbasik.NCommandBus.Http;
 using Ploeh.AutoFixture;
 using Xunit;
 
-namespace Http.Tests
+namespace kolbasik.NCommandBus.Http.Tests
 {
     public class HttpCommandInvokerTests
     {

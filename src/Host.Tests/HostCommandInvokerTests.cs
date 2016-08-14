@@ -4,11 +4,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using FakeItEasy;
 using kolbasik.NCommandBus.Abstractions;
-using kolbasik.NCommandBus.Host;
 using Ploeh.AutoFixture;
 using Xunit;
 
-namespace Host.Tests
+namespace kolbasik.NCommandBus.Host.Tests
 {
     public sealed class HostCommandInvokerTests
     {

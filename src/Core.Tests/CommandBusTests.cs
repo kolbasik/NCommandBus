@@ -5,12 +5,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using FakeItEasy;
 using kolbasik.NCommandBus.Abstractions;
-using kolbasik.NCommandBus.Core;
 using Ploeh.AutoFixture;
 using Xunit;
-using ValidationException = kolbasik.NCommandBus.Core.ValidationException;
 
-namespace Core.Tests
+namespace kolbasik.NCommandBus.Core.Tests
 {
     public class CommandBusTests
     {

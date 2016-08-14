@@ -7,8 +7,8 @@
     <ProjectGuid>{56DAF297-C676-41DA-90DE-C517974E89A3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Host.Tests</RootNamespace>
-    <AssemblyName>Host.Tests</AssemblyName>
+    <RootNamespace>kolbasik.NCommandBus.Host.Tests</RootNamespace>
+    <AssemblyName>kolbasik.NCommandBus.Host.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
