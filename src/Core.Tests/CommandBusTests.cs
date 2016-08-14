@@ -44,13 +44,13 @@ namespace kolbasik.NCommandBus.Core.Tests
         }
 
         [Fact]
-        public async Task Send_should_call_the_execute_method_to_get_the_result()
+        public async Task Send_should_call_the_invoke_method_to_get_the_result()
         {
             // arrange
             var command = fixture.Create<TestCommand>();
             var expected = fixture.Create<TestResult>();
 
-            A.CallTo(() => commandInvoker.Invoke<TestResult, TestCommand>(command, CancellationToken.None)).Returns(expected);
+            A.CallTo(() => commandInvoker.Invoke<TestResult, TestCommand>(A<CommandContext<TestCommand>>.Ignored, CancellationToken.None)).Returns(expected);
 
             // act
             var actual = await commandBus.Send<TestResult, TestCommand>(command).ConfigureAwait(false);
@@ -73,13 +73,13 @@ namespace kolbasik.NCommandBus.Core.Tests
             commandBus.CommandObservers.Add(commandObserver);
 
             var actual = new List<string>();
-            A.CallTo(() => commandValidator.Validate(A<CommandContext<TestCommand, TestResult>>.Ignored))
+            A.CallTo(() => commandValidator.Validate(A<CommandContext<TestCommand>>.Ignored))
                 .Invokes(x => actual.Add("Validate")).Returns(Task.FromResult(1));
-            A.CallTo(() => commandObserver.PreInvoke(A<CommandContext<TestCommand, TestResult>>.Ignored))
+            A.CallTo(() => commandObserver.PreInvoke<TestResult, TestCommand>(A<CommandContext<TestCommand>>.Ignored))
                 .Invokes(x => actual.Add("PreInvoke")).Returns(Task.FromResult(1));
-            A.CallTo(() => commandInvoker.Invoke<TestResult, TestCommand>(command, CancellationToken.None))
+            A.CallTo(() => commandInvoker.Invoke<TestResult, TestCommand>(A<CommandContext<TestCommand>>.Ignored, CancellationToken.None))
                 .Invokes(x => actual.Add("Invoke")).Returns(commandResult);
-            A.CallTo(() => commandObserver.PostInvoke(A<CommandContext<TestCommand, TestResult>>.Ignored))
+            A.CallTo(() => commandObserver.PostInvoke<TestResult, TestCommand>(A<CommandContext<TestCommand>>.Ignored))
                 .Invokes(x => actual.Add("PostInvoke")).Returns(Task.FromResult(1));
 
             var expected = new[] {"Validate", "PreInvoke", "Invoke", "PostInvoke"};

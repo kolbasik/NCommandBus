@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Threading;
@@ -32,17 +33,35 @@ namespace kolbasik.NCommandBus.Http
         public MediaTypeFormatter MediaTypeFormatter { get; set; }
         public MediaTypeFormatterCollection MediaTypeFormatterCollection { get; }
 
-        public async Task<TResult> Invoke<TResult, TCommand>(TCommand command, CancellationToken cancellationToken)
+        public async Task<TResult> Invoke<TResult, TCommand>(CommandContext<TCommand> context, CancellationToken cancellationToken)
         {
-            var requestContent = new ObjectContent<TCommand>(command, MediaTypeFormatter);
+            string requestBody = null, responseBody = null;
+            var requestContent = new ObjectContent<TCommand>(context.Command, MediaTypeFormatter);
             requestContent.Headers.Add(@"X-RPC-CommandType", GetTypeName(typeof (TCommand)));
             requestContent.Headers.Add(@"X-RPC-ResultType", GetTypeName(typeof(TResult)));
+            requestBody = await requestContent.ReadAsStringAsync().ConfigureAwait(false);
 
             var post = HttpClient.PostAsync(RequestUri.AbsoluteUri, requestContent, cancellationToken);
             var response = await post.ConfigureAwait(false);
-            response.EnsureSuccessStatusCode();
-
             var responseContent = response.Content;
+            if (responseContent != null)
+            {
+                responseBody = await responseContent.ReadAsStringAsync().ConfigureAwait(false);
+            }
+
+            try
+            {
+                response.EnsureSuccessStatusCode();
+            }
+            catch (Exception ex)
+            {
+                throw new HttpCommandInvokerException(@"ERROR", ex)
+                {
+                    RequestContent = requestBody,
+                    ResponseContent = responseBody
+                };
+            }
+
             if (responseContent != null)
             {
                 IEnumerable<string> values;
@@ -63,9 +82,16 @@ namespace kolbasik.NCommandBus.Http
             return Type.GetType(typeName, false, true);
         }
 
+        /// <summary>
+        /// In order to lose the assembly version.
+        /// </summary>
+        /// <param name="type">.net type</param>
+        /// <returns>the type name</returns>
         private static string GetTypeName(Type type)
         {
-            return $@"{type.FullName}, {type.Assembly.FullName}";
+            var assemblyQualifiedName = type.AssemblyQualifiedName;
+            var count = assemblyQualifiedName.IndexOf(',', assemblyQualifiedName.IndexOf(',') + 1);
+            return assemblyQualifiedName.Substring(0, count);
         }
     }
 }

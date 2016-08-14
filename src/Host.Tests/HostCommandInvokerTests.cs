@@ -27,15 +27,16 @@ namespace kolbasik.NCommandBus.Host.Tests
         {
             // arrange
             var command = fixture.Create<TestCommand>();
+            var context = new CommandContext<TestCommand>(command);
             var expected = fixture.Create<TestResult>();
 
             var commandHandler = A.Fake<ICommandHandler<TestCommand, TestResult>>();
-            A.CallTo(() => commandHandler.Handle(command)).Returns(expected);
+            A.CallTo(() => commandHandler.Handle(context)).Returns(expected);
 
             serviceContainer.AddService(typeof(ICommandHandler<TestCommand, TestResult>), commandHandler);
 
             // act
-            var actual = await hostCommandInvoker.Invoke<TestResult, TestCommand>(command, CancellationToken.None).ConfigureAwait(false);
+            var actual = await hostCommandInvoker.Invoke<TestResult, TestCommand>(context, CancellationToken.None).ConfigureAwait(false);
 
             // assert
             Assert.Equal(expected, actual);
@@ -46,12 +47,13 @@ namespace kolbasik.NCommandBus.Host.Tests
         {
             // arrange
             var command = fixture.Create<TestCommand>();
+            var context = new CommandContext<TestCommand>(command);
 
             // act
             var actual =
                 await
                     Assert.ThrowsAsync<InvalidOperationException>(
-                        () => hostCommandInvoker.Invoke<TestResult, TestCommand>(command, CancellationToken.None)).ConfigureAwait(false);
+                        () => hostCommandInvoker.Invoke<TestResult, TestCommand>(context, CancellationToken.None)).ConfigureAwait(false);
 
             // assert
             Assert.NotNull(actual);

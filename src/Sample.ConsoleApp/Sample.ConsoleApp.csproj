@@ -4,15 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{BCCABE8E-137E-4D46-A005-BFBACAC0ED90}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{D2E14D23-F5A1-46B8-AB4E-8984053C2A17}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>kolbasik.NCommandBus.Core</RootNamespace>
-    <AssemblyName>kolbasik.NCommandBus.Core</AssemblyName>
+    <RootNamespace>Sample.ConsoleApp</RootNamespace>
+    <AssemblyName>Sample.ConsoleApp</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,6 +23,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -30,24 +32,48 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="CommandBus.cs" />
-    <Compile Include="CommandBusExtensions.cs" />
-    <Compile Include="ValidationInterceptor.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ValidationException.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CommandBus.Abstractions\Abstractions.csproj">
-      <Project>{c4bc8db5-9124-4469-81ab-6c6439501175}</Project>
+      <Project>{C4BC8DB5-9124-4469-81AB-6C6439501175}</Project>
       <Name>Abstractions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CommandBus.Host\Host.csproj">
+      <Project>{F37DB902-1CC1-466F-85FA-B18AFE5CCA39}</Project>
+      <Name>Host</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CommandBus.Http\Http.csproj">
+      <Project>{6C0616DD-B725-4A70-A42F-E2138C32568C}</Project>
+      <Name>Http</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Project>{BCCABE8E-137E-4D46-A005-BFBACAC0ED90}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Sample.Commands\Sample.Commands.csproj">
+      <Project>{DF852726-8AEA-4887-924A-9A00380C7D75}</Project>
+      <Name>Sample.Commands</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Sample.Handles\Sample.Handles.csproj">
+      <Project>{9BE15D36-61AE-4C7D-9A57-6A10D667DE61}</Project>
+      <Name>Sample.Handles</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

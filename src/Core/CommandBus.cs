@@ -21,27 +21,22 @@ namespace kolbasik.NCommandBus.Core
         public List<ICommandObserver> CommandObservers { get; }
         public List<ICommandValidator> CommandValidators { get; }
 
-        public Task<TResult> Send<TResult, TCommand>(TCommand command)
-        {
-            return Send<TResult, TCommand>(command, CancellationToken.None);
-        }
-
         public async Task<TResult> Send<TResult, TCommand>(TCommand command, CancellationToken cancellationToken)
         {
-            var context = new CommandContext<TCommand, TResult>(command);
+            var context = new CommandContext<TCommand>(command);
 
             foreach (var commandValidator in CommandValidators)
                 await commandValidator.Validate(context).ConfigureAwait(false);
 
             foreach (var commandObserver in CommandObservers)
-                await commandObserver.PreInvoke(context).ConfigureAwait(false);
+                await commandObserver.PreInvoke<TResult, TCommand>(context).ConfigureAwait(false);
 
-            context.Result = await commandInvoker.Invoke<TResult, TCommand>(command, cancellationToken).ConfigureAwait(false);
+            context.Result = await commandInvoker.Invoke<TResult, TCommand>(context, cancellationToken).ConfigureAwait(false);
 
             foreach (var commandObserver in CommandObservers)
-                await commandObserver.PostInvoke(context).ConfigureAwait(false);
+                await commandObserver.PostInvoke<TResult, TCommand>(context).ConfigureAwait(false);
 
-            return context.Result;
+            return (TResult) context.Result;
         }
     }
 }

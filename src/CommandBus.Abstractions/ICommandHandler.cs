@@ -2,8 +2,8 @@
 
 namespace kolbasik.NCommandBus.Abstractions
 {
-    public interface ICommandHandler<in TCommand, TResult>
+    public interface ICommandHandler<TCommand, TResult>
     {
-        Task<TResult> Handle(TCommand command);
+        Task<TResult> Handle(CommandContext<TCommand> command);
     }
 }

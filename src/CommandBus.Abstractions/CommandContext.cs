@@ -1,13 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
 
 namespace kolbasik.NCommandBus.Abstractions
 {
-    public sealed class CommandContext<TCommand, TResult>
+    public sealed class CommandContext<TCommand>
     {
-        private static readonly Task Done = Task.FromResult(1);
-
         public CommandContext(TCommand command)
         {
             Command = command;
@@ -15,8 +12,7 @@ namespace kolbasik.NCommandBus.Abstractions
         }
 
         public TCommand Command { get; }
-        public TResult Result { get; set; }
+        public object Result { get; set; }
         public List<ValidationResult> ValidationResults { get; }
-        public Task CompleteTask => Done;
     }
 }
