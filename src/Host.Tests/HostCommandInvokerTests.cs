@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.Design;
 using System.Threading;
 using System.Threading.Tasks;
 using FakeItEasy;
@@ -12,14 +13,14 @@ namespace Host.Tests
     public sealed class HostCommandInvokerTests
     {
         private readonly Fixture fixture;
-        private readonly IServiceProvider serviceProvider;
+        private readonly ServiceContainer serviceContainer;
         private readonly HostCommandInvoker hostCommandInvoker;
 
         public HostCommandInvokerTests()
         {
             fixture = new Fixture();
-            serviceProvider = A.Fake<IServiceProvider>();
-            hostCommandInvoker = new HostCommandInvoker(serviceProvider);
+            serviceContainer = new ServiceContainer();
+            hostCommandInvoker = new HostCommandInvoker(serviceContainer);
         }
 
         [Fact]
@@ -31,7 +32,8 @@ namespace Host.Tests
 
             var commandHandler = A.Fake<ICommandHandler<TestCommand, TestResult>>();
             A.CallTo(() => commandHandler.Handle(command)).Returns(expected);
-            A.CallTo(() => serviceProvider.GetService(typeof (ICommandHandler<TestCommand, TestResult>))).Returns(commandHandler);
+
+            serviceContainer.AddService(typeof(ICommandHandler<TestCommand, TestResult>), commandHandler);
 
             // act
             var actual = await hostCommandInvoker.Invoke<TestResult, TestCommand>(command, CancellationToken.None).ConfigureAwait(false);

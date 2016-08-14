@@ -9,6 +9,7 @@ namespace kolbasik.NCommandBus.Host
     {
         private readonly IServiceProvider serviceProvider;
 
+        /// <param name="serviceProvider">The <see cref="System.ComponentModel.Design.ServiceContainer" /> can be used as a native .net implementation.</param>
         public HostCommandInvoker(IServiceProvider serviceProvider)
         {
             if (serviceProvider == null)
