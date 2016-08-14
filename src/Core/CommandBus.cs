@@ -14,8 +14,8 @@ namespace kolbasik.NCommandBus.Core
         {
             if (commandInvoker == null) throw new ArgumentNullException(nameof(commandInvoker));
             this.commandInvoker = commandInvoker;
-            CommandObservers = new List<ICommandObserver> {DataAnnotationsInterceptor.Instance};
-            CommandValidators = new List<ICommandValidator> {DataAnnotationsInterceptor.Instance};
+            CommandObservers = new List<ICommandObserver> {ValidationInterceptor.Instance};
+            CommandValidators = new List<ICommandValidator> {ValidationInterceptor.Instance};
         }
 
         public List<ICommandObserver> CommandObservers { get; }

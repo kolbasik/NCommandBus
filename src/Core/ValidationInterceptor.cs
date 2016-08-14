@@ -4,9 +4,9 @@ using kolbasik.NCommandBus.Abstractions;
 
 namespace kolbasik.NCommandBus.Core
 {
-    public sealed class DataAnnotationsInterceptor : ICommandValidator, ICommandObserver
+    public sealed class ValidationInterceptor : ICommandValidator, ICommandObserver
     {
-        public static readonly DataAnnotationsInterceptor Instance = new DataAnnotationsInterceptor();
+        public static readonly ValidationInterceptor Instance = new ValidationInterceptor();
         private static readonly Task Done = Task.FromResult(1);
 
         public Task Validate<TCommand, TResult>(CommandContext<TCommand, TResult> context)
