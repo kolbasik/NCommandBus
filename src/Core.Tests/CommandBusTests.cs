@@ -74,17 +74,17 @@ namespace Core.Tests
             var commandObserver = A.Fake<ICommandObserver>();
             commandBus.CommandObservers.Add(commandObserver);
 
-            A.CallTo(() => commandInvoker.Invoke<TestResult, TestCommand>(command, CancellationToken.None)).Returns(commandResult);
-
-            var actual = new List<int>();
+            var actual = new List<string>();
             A.CallTo(() => commandValidator.Validate(A<CommandContext<TestCommand, TestResult>>.Ignored))
-                .Invokes(x => actual.Add(1)).Returns(Task.FromResult(1));
+                .Invokes(x => actual.Add("Validate")).Returns(Task.FromResult(1));
             A.CallTo(() => commandObserver.PreInvoke(A<CommandContext<TestCommand, TestResult>>.Ignored))
-                .Invokes(x => actual.Add(2)).Returns(Task.FromResult(1));
+                .Invokes(x => actual.Add("PreInvoke")).Returns(Task.FromResult(1));
+            A.CallTo(() => commandInvoker.Invoke<TestResult, TestCommand>(command, CancellationToken.None))
+                .Invokes(x => actual.Add("Invoke")).Returns(commandResult);
             A.CallTo(() => commandObserver.PostInvoke(A<CommandContext<TestCommand, TestResult>>.Ignored))
-                .Invokes(x => actual.Add(3)).Returns(Task.FromResult(1));
+                .Invokes(x => actual.Add("PostInvoke")).Returns(Task.FromResult(1));
 
-            var expected = new[] {1, 2, 3};
+            var expected = new[] {"Validate", "PreInvoke", "Invoke", "PostInvoke"};
 
             // act
             var result = await commandBus.Send<TestResult, TestCommand>(command).ConfigureAwait(false);

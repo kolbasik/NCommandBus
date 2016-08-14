@@ -69,9 +69,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <WCFMetadata Include="Service References\" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\CommandBus.Abstractions\Abstractions.csproj">
       <Project>{c4bc8db5-9124-4469-81ab-6c6439501175}</Project>
       <Name>Abstractions</Name>
