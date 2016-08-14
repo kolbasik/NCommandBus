@@ -39,9 +39,9 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="CommandBus.cs" />
-    <Compile Include="CommandBusValidationException.cs" />
-    <Compile Include="DataAnnotationsCommandValidator.cs" />
+    <Compile Include="DataAnnotationsInterceptor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ValidationException.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CommandBus.Abstractions\Abstractions.csproj">

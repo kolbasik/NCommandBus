@@ -14,8 +14,8 @@ namespace kolbasik.NCommandBus.Core
         {
             if (commandInvoker == null) throw new ArgumentNullException(nameof(commandInvoker));
             this.commandInvoker = commandInvoker;
-            CommandObservers = new List<ICommandObserver>();
-            CommandValidators = new List<ICommandValidator> {DataAnnotationsCommandValidator.Instance};
+            CommandObservers = new List<ICommandObserver> {DataAnnotationsInterceptor.Instance};
+            CommandValidators = new List<ICommandValidator> {DataAnnotationsInterceptor.Instance};
         }
 
         public List<ICommandObserver> CommandObservers { get; }
@@ -33,19 +33,15 @@ namespace kolbasik.NCommandBus.Core
             foreach (var commandValidator in CommandValidators)
                 await commandValidator.Validate(context).ConfigureAwait(false);
 
-            if (context.ValidationResults.Count > 0)
-                throw new CommandBusValidationException(context.Command, context.ValidationResults);
-
-
             foreach (var commandObserver in CommandObservers)
-                await commandObserver.PreExecute(context).ConfigureAwait(false);
+                await commandObserver.PreInvoke(context).ConfigureAwait(false);
 
             context.Result = await commandInvoker.Invoke<TResult, TCommand>(command, cancellationToken).ConfigureAwait(false);
 
             foreach (var commandObserver in CommandObservers)
-                await commandObserver.PostExecute(context).ConfigureAwait(false);
+                await commandObserver.PostInvoke(context).ConfigureAwait(false);
 
-            return (TResult) context.Result;
+            return context.Result;
         }
     }
 }

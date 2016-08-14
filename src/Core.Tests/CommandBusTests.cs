@@ -8,6 +8,7 @@ using kolbasik.NCommandBus.Abstractions;
 using kolbasik.NCommandBus.Core;
 using Ploeh.AutoFixture;
 using Xunit;
+using ValidationException = kolbasik.NCommandBus.Core.ValidationException;
 
 namespace Core.Tests
 {
@@ -34,7 +35,7 @@ namespace Core.Tests
             // act
             var actual =
                 await
-                    Assert.ThrowsAsync<CommandBusValidationException>(
+                    Assert.ThrowsAsync<ValidationException>(
                         () => commandBus.Send<TestResult, TestCommand>(command)).ConfigureAwait(false);
 
             // assert
@@ -78,9 +79,9 @@ namespace Core.Tests
             var actual = new List<int>();
             A.CallTo(() => commandValidator.Validate(A<CommandContext<TestCommand, TestResult>>.Ignored))
                 .Invokes(x => actual.Add(1)).Returns(Task.FromResult(1));
-            A.CallTo(() => commandObserver.PreExecute(A<CommandContext<TestCommand, TestResult>>.Ignored))
+            A.CallTo(() => commandObserver.PreInvoke(A<CommandContext<TestCommand, TestResult>>.Ignored))
                 .Invokes(x => actual.Add(2)).Returns(Task.FromResult(1));
-            A.CallTo(() => commandObserver.PostExecute(A<CommandContext<TestCommand, TestResult>>.Ignored))
+            A.CallTo(() => commandObserver.PostInvoke(A<CommandContext<TestCommand, TestResult>>.Ignored))
                 .Invokes(x => actual.Add(3)).Returns(Task.FromResult(1));
 
             var expected = new[] {1, 2, 3};

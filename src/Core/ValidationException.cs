@@ -1,12 +1,12 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace kolbasik.NCommandBus.Core
 {
-    public sealed class CommandBusValidationException : ApplicationException
+    public sealed class ValidationException : ApplicationException
     {
-        public CommandBusValidationException(object command, IEnumerable<ValidationResult> validationResults)
+        public ValidationException(object command, IEnumerable<ValidationResult> validationResults)
         {
             Command = command;
             ValidationResults = new List<ValidationResult>(validationResults);
