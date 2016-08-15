@@ -32,10 +32,10 @@ namespace kolbasik.NCommandBus.Http
         public MediaTypeFormatter MediaTypeFormatter { get; set; }
         public MediaTypeFormatterCollection MediaTypeFormatterCollection { get; }
 
-        public async Task<TResult> Invoke<TResult, TCommand>(CommandContext<TCommand, TResult> context, CancellationToken cancellationToken)
+        public async Task<TResult> Invoke<TResult, TCommand>(TCommand command, CancellationToken cancellationToken)
         {
             string requestBody = null, responseBody = null;
-            var requestContent = new ObjectContent<TCommand>(context.Command, MediaTypeFormatter);
+            var requestContent = new ObjectContent<TCommand>(command, MediaTypeFormatter);
             requestContent.Headers.Add(@"X-RPC-CommandType", GetTypeName(typeof (TCommand)));
             requestContent.Headers.Add(@"X-RPC-ResultType", GetTypeName(typeof(TResult)));
             requestBody = await requestContent.ReadAsStringAsync().ConfigureAwait(false);

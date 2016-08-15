@@ -50,7 +50,7 @@ namespace kolbasik.NCommandBus.Core.Tests
             var command = fixture.Create<TestCommand>();
             var expected = fixture.Create<TestResult>();
 
-            A.CallTo(() => commandInvoker.Invoke(A<CommandContext<TestCommand, TestResult>>.Ignored, CancellationToken.None)).Returns(expected);
+            A.CallTo(() => commandInvoker.Invoke<TestResult, TestCommand>(command, CancellationToken.None)).Returns(expected);
 
             // act
             var actual = await commandBus.Send<TestResult, TestCommand>(command).ConfigureAwait(false);
@@ -77,7 +77,7 @@ namespace kolbasik.NCommandBus.Core.Tests
                 .Invokes(x => actual.Add("Validate")).Returns(Task.FromResult(1));
             A.CallTo(() => commandObserver.PreInvoke(A<CommandContext<TestCommand, TestResult>>.Ignored))
                 .Invokes(x => actual.Add("PreInvoke")).Returns(Task.FromResult(1));
-            A.CallTo(() => commandInvoker.Invoke(A<CommandContext<TestCommand, TestResult>>.Ignored, CancellationToken.None))
+            A.CallTo(() => commandInvoker.Invoke<TestResult, TestCommand>(command, CancellationToken.None))
                 .Invokes(x => actual.Add("Invoke")).Returns(commandResult);
             A.CallTo(() => commandObserver.PostInvoke(A<CommandContext<TestCommand, TestResult>>.Ignored))
                 .Invokes(x => actual.Add("PostInvoke")).Returns(Task.FromResult(1));

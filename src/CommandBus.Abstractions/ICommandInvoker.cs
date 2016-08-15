@@ -5,6 +5,6 @@ namespace kolbasik.NCommandBus.Abstractions
 {
     public interface ICommandInvoker
     {
-        Task<TResult> Invoke<TResult, TCommand>(CommandContext<TCommand, TResult> context, CancellationToken cancellationToken);
+        Task<TResult> Invoke<TResult, TCommand>(TCommand command, CancellationToken cancellationToken);
     }
 }

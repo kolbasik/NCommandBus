@@ -31,12 +31,12 @@ namespace kolbasik.NCommandBus.Core
             foreach (var commandObserver in CommandObservers)
                 await commandObserver.PreInvoke(context).ConfigureAwait(false);
 
-            context.Result = await commandInvoker.Invoke(context, cancellationToken).ConfigureAwait(false);
+            context.Result = await commandInvoker.Invoke<TResult, TCommand>(context.Command, cancellationToken).ConfigureAwait(false);
 
             foreach (var commandObserver in CommandObservers)
                 await commandObserver.PostInvoke(context).ConfigureAwait(false);
 
-            return (TResult) context.Result;
+            return context.Result;
         }
     }
 }
