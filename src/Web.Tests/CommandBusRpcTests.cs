@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.IO;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using FakeItEasy;
@@ -53,8 +54,8 @@ namespace Web.Tests
             A.CallTo(() => httpContext.Request.Params).Returns(new NameValueCollection());
             A.CallTo(() => httpContext.Request.InputStream).Returns(new MemoryStream());
             A.CallTo(() => httpContext.Response).Returns(A.Fake<HttpResponseBase>());
-            httpContext.Request.Params["X-RPC-CommandType"] = typeof (TestCommand).AssemblyQualifiedName;
-            httpContext.Request.Params["X-RPC-ResultType"] = typeof (TestResult).AssemblyQualifiedName;
+            httpContext.Request.Params["commandType"] = typeof (TestCommand).AssemblyQualifiedName;
+            httpContext.Request.Params["resultType"] = typeof (TestResult).AssemblyQualifiedName;
 
             var writer = new StreamWriter(httpContext.Request.InputStream);
             writer.Write(JsonConvert.SerializeObject(command));
@@ -62,7 +63,7 @@ namespace Web.Tests
             httpContext.Request.InputStream.Position = 0;
 
             var commandHandler = A.Fake<ICommandHandler<TestCommand, TestResult>>();
-            A.CallTo(() => commandHandler.Handle(A<CommandContext<TestCommand>>._)).Returns(result);
+            A.CallTo(() => commandHandler.Handle(A<TestCommand>._, CancellationToken.None)).Returns(result);
             A.CallTo(() => serviceProvider.GetService(typeof (ICommandHandler<TestCommand, TestResult>)))
                 .Returns(commandHandler);
 

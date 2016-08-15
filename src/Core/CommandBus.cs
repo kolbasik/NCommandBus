@@ -23,18 +23,18 @@ namespace kolbasik.NCommandBus.Core
 
         public async Task<TResult> Send<TResult, TCommand>(TCommand command, CancellationToken cancellationToken)
         {
-            var context = new CommandContext<TCommand>(command);
+            var context = new CommandContext<TCommand, TResult>(command);
 
             foreach (var commandValidator in CommandValidators)
                 await commandValidator.Validate(context).ConfigureAwait(false);
 
             foreach (var commandObserver in CommandObservers)
-                await commandObserver.PreInvoke<TResult, TCommand>(context).ConfigureAwait(false);
+                await commandObserver.PreInvoke(context).ConfigureAwait(false);
 
-            context.Result = await commandInvoker.Invoke<TResult, TCommand>(context, cancellationToken).ConfigureAwait(false);
+            context.Result = await commandInvoker.Invoke(context, cancellationToken).ConfigureAwait(false);
 
             foreach (var commandObserver in CommandObservers)
-                await commandObserver.PostInvoke<TResult, TCommand>(context).ConfigureAwait(false);
+                await commandObserver.PostInvoke(context).ConfigureAwait(false);
 
             return (TResult) context.Result;
         }

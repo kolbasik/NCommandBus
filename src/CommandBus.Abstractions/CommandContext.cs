@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace kolbasik.NCommandBus.Abstractions
 {
-    public sealed class CommandContext<TCommand>
+    public sealed class CommandContext<TCommand, TResult>
     {
         public CommandContext(TCommand command)
         {
@@ -11,8 +11,8 @@ namespace kolbasik.NCommandBus.Abstractions
             ValidationResults = new List<ValidationResult>();
         }
 
-        public TCommand Command { get; }
-        public object Result { get; set; }
         public List<ValidationResult> ValidationResults { get; }
+        public TCommand Command { get; }
+        public TResult Result { get; set; }
     }
 }

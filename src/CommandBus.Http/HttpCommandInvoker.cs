@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Threading;
@@ -33,7 +32,7 @@ namespace kolbasik.NCommandBus.Http
         public MediaTypeFormatter MediaTypeFormatter { get; set; }
         public MediaTypeFormatterCollection MediaTypeFormatterCollection { get; }
 
-        public async Task<TResult> Invoke<TResult, TCommand>(CommandContext<TCommand> context, CancellationToken cancellationToken)
+        public async Task<TResult> Invoke<TResult, TCommand>(CommandContext<TCommand, TResult> context, CancellationToken cancellationToken)
         {
             string requestBody = null, responseBody = null;
             var requestContent = new ObjectContent<TCommand>(context.Command, MediaTypeFormatter);

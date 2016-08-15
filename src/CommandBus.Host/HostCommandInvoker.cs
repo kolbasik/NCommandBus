@@ -17,7 +17,7 @@ namespace kolbasik.NCommandBus.Host
             this.serviceProvider = serviceProvider;
         }
 
-        public Task<TResult> Invoke<TResult, TCommand>(CommandContext<TCommand> context, CancellationToken cancellationToken)
+        public Task<TResult> Invoke<TResult, TCommand>(CommandContext<TCommand, TResult> context, CancellationToken cancellationToken)
         {
             var commandHandlerType = typeof(ICommandHandler<TCommand, TResult>);
             var commandHandler = serviceProvider.GetService(commandHandlerType) as ICommandHandler<TCommand, TResult>;
@@ -25,7 +25,7 @@ namespace kolbasik.NCommandBus.Host
             {
                 throw new InvalidOperationException($"Could not resolve the {commandHandlerType.FullName} type.");
             }
-            return commandHandler.Handle(context);
+            return commandHandler.Handle(context.Command, cancellationToken);
         }
     }
 }

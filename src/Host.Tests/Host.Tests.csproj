@@ -51,6 +51,9 @@
       <HintPath>..\packages\xunit.extensibility.core.2.1.0\lib\dotnet\xunit.core.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="xunit.execution.dotnet">
+      <HintPath>..\packages\xunit.extensibility.execution.2.1.0\lib\dotnet\xunit.execution.dotnet.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\CommonAssemblyInfo.cs">

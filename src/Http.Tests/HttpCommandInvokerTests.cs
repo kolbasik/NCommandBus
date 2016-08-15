@@ -36,7 +36,7 @@ namespace kolbasik.NCommandBus.Http.Tests
         {
             // arrange
             var command = fixture.Create<TestCommand>();
-            var context = new CommandContext<TestCommand>(command);
+            var context = new CommandContext<TestCommand, TestResult>(command);
 
             ArgumentCollection actual = null;
             A.CallTo(httpMessageHandler).Where(x => x.Method.Name == "SendAsync")
@@ -45,7 +45,7 @@ namespace kolbasik.NCommandBus.Http.Tests
                 .Returns(new HttpResponseMessage(HttpStatusCode.OK));
 
             // act
-            await httpCommandInvoker.Invoke<TestResult, TestCommand>(context, CancellationToken.None).ConfigureAwait(false);
+            await httpCommandInvoker.Invoke(context, CancellationToken.None).ConfigureAwait(false);
 
             // assert
             Assert.NotNull(actual);
@@ -65,10 +65,10 @@ namespace kolbasik.NCommandBus.Http.Tests
         {
             // arrange
             var command = fixture.Create<TestCommand>();
-            var context = new CommandContext<TestCommand>(command);
+            var context = new CommandContext<TestCommand, TestResult>(command);
 
             // act
-            var actual = await httpCommandInvoker.Invoke<TestResult, TestCommand>(context, CancellationToken.None).ConfigureAwait(false);
+            var actual = await httpCommandInvoker.Invoke(context, CancellationToken.None).ConfigureAwait(false);
 
             // assert
             Assert.Null(actual);
@@ -80,7 +80,7 @@ namespace kolbasik.NCommandBus.Http.Tests
             // arrange
             var expected = fixture.Create<TestResult>();
             var command = fixture.Create<TestCommand>();
-            var context = new CommandContext<TestCommand>(command);
+            var context = new CommandContext<TestCommand, TestResult>(command);
 
             var response = new HttpResponseMessage(HttpStatusCode.OK);
             response.Headers.Add("X-RPC-ResultType", typeof(TestResult).FullName);
@@ -92,7 +92,7 @@ namespace kolbasik.NCommandBus.Http.Tests
                 .Returns(response);
 
             // act
-            var actual = await httpCommandInvoker.Invoke<TestResult, TestCommand>(context, CancellationToken.None).ConfigureAwait(false);
+            var actual = await httpCommandInvoker.Invoke(context, CancellationToken.None).ConfigureAwait(false);
 
             // assert
             Assert.NotNull(actual);
