@@ -22,6 +22,10 @@ namespace kolbasik.NCommandBus.Remote
             return Task.FromResult(result);
         }
 
+        /// <summary>
+        /// The .net remoting cannot work with generic methods and async\await.
+        /// </summary>
+        /// <seealso cref="System.MarshalByRefObject" />
         public sealed class RemoteProxy : MarshalByRefObject
         {
             private readonly ICommandInvoker commandInvoker;
