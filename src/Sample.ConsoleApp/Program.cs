@@ -1,5 +1,5 @@
 ﻿using System;
-using System.ComponentModel.Design;
+using System.Reflection;
 using System.Threading.Tasks;
 using kolbasik.NCommandBus.Abstractions;
 using kolbasik.NCommandBus.Core;
@@ -7,6 +7,7 @@ using kolbasik.NCommandBus.Host;
 using kolbasik.NCommandBus.Http;
 using kolbasik.NCommandBus.Remote;
 using Sample.Commands;
+using Sample.Core;
 using Sample.Handles;
 
 namespace Sample.ConsoleApp
@@ -23,14 +24,13 @@ namespace Sample.ConsoleApp
             Console.WriteLine(@"Press any key to start...");
             Console.ReadKey(true);
 
-            var serviceContainer = new ServiceContainer();
-            serviceContainer.AddService(typeof (ICommandHandler<AddValues, AddValuesResult>), new Calculator());
-            serviceContainer.AddService(typeof (ICommandHandler<SubValues, SubValuesResult>), new Calculator());
-            serviceContainer.AddService(typeof (ICommandHandler<GetAppName, GetAppName.Result>), new AppDataHandler());
+            var dependencyResolver = new SampleDependencyResolver();
+            dependencyResolver.RegisterAll(typeof(ICommandHandler<,>), Assembly.Load("Sample.Handles"));
+
             try
             {
                 Console.WriteLine(@"SelfHost:");
-                var hostCommandBus = new CommandBus(new HostCommandInvoker(serviceContainer));
+                var hostCommandBus = new CommandBus(new HostCommandInvoker(dependencyResolver.ServiceContainer));
                 await Perform(hostCommandBus).ConfigureAwait(false);
 
                 Console.WriteLine(@"Http:");

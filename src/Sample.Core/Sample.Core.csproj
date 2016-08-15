@@ -4,16 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B3E6B8A1-EC3C-4756-8BF4-DCFD72593CD3}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{5181FDAC-E93E-466A-AA00-A5AF66F566B0}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Sample.RemoteApp</RootNamespace>
-    <AssemblyName>Sample.RemoteApp</AssemblyName>
+    <RootNamespace>Sample.Core</RootNamespace>
+    <AssemblyName>Sample.Core</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,7 +22,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -34,44 +32,10 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Runtime.Remoting" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\CommandBus.Abstractions\Abstractions.csproj">
-      <Project>{c4bc8db5-9124-4469-81ab-6c6439501175}</Project>
-      <Name>Abstractions</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CommandBus.Host\Host.csproj">
-      <Project>{f37db902-1cc1-466f-85fa-b18afe5cca39}</Project>
-      <Name>Host</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Core\Core.csproj">
-      <Project>{bccabe8e-137e-4d46-a005-bfbacac0ed90}</Project>
-      <Name>Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Remote\Remote.csproj">
-      <Project>{0D3BF2F7-E6E7-4502-B30E-4AF1102EEBB3}</Project>
-      <Name>Remote</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Sample.Commands\Sample.Commands.csproj">
-      <Project>{df852726-8aea-4887-924a-9a00380c7d75}</Project>
-      <Name>Sample.Commands</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Sample.Core\Sample.Core.csproj">
-      <Project>{5181FDAC-E93E-466A-AA00-A5AF66F566B0}</Project>
-      <Name>Sample.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Sample.Handles\Sample.Handles.csproj">
-      <Project>{9be15d36-61ae-4c7d-9a57-6a10d667de61}</Project>
-      <Name>Sample.Handles</Name>
-    </ProjectReference>
+    <Compile Include="SampleDependencyResolver.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

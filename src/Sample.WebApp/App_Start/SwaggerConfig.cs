@@ -1,4 +1,5 @@
 using System.Web.Http;
+using Sample.Core;
 using Sample.WebApp;
 using Swashbuckle.Application;
 using WebActivatorEx;
@@ -32,7 +33,7 @@ namespace Sample.WebApp
                     c.UseFullTypeNameInSchemaIds();
                     c.DescribeAllEnumsAsStrings();
 
-                    c.CustomProvider(defaultProvider => new CommandBusSwaggerProvider(defaultProvider, "CommandBus", ServiceLocator.Instance.Definitions));
+                    c.CustomProvider(defaultProvider => new CommandBusSwaggerProvider(defaultProvider, "CommandBus", SampleDependencyResolver.Instance.Definitions));
 
                 }).EnableSwaggerUi(c => c.EnableDiscoveryUrlSelector());
         }

@@ -76,6 +76,10 @@
       <Project>{DF852726-8AEA-4887-924A-9A00380C7D75}</Project>
       <Name>Sample.Commands</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Sample.Core\Sample.Core.csproj">
+      <Project>{5181FDAC-E93E-466A-AA00-A5AF66F566B0}</Project>
+      <Name>Sample.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Sample.Handles\Sample.Handles.csproj">
       <Project>{9BE15D36-61AE-4C7D-9A57-6A10D667DE61}</Project>
       <Name>Sample.Handles</Name>

@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Http;
 using kolbasik.NCommandBus.Core;
 using kolbasik.NCommandBus.Web;
+using Sample.Core;
 
 namespace Sample.WebApp
 {
@@ -12,7 +13,7 @@ namespace Sample.WebApp
     {
         private readonly CommandBusRpc commandBusRpc;
 
-        public CommandBusHttpHandler() : this(ServiceLocator.Instance.Resolve<CommandBus>(), GlobalConfiguration.Configuration.Formatters)
+        public CommandBusHttpHandler() : this(SampleDependencyResolver.Instance.Resolve<CommandBus>(), GlobalConfiguration.Configuration.Formatters)
         {
         }
 

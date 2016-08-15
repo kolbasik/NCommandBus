@@ -4,13 +4,13 @@ using System.ComponentModel.Design;
 using System.Linq;
 using System.Reflection;
 
-namespace Sample.WebApp
+namespace Sample.Core
 {
-    public sealed class ServiceLocator
+    public sealed class SampleDependencyResolver
     {
-        public static readonly ServiceLocator Instance = new ServiceLocator();
+        public static readonly SampleDependencyResolver Instance = new SampleDependencyResolver();
 
-        public ServiceLocator()
+        public SampleDependencyResolver()
         {
             ServiceContainer = new ServiceContainer();
             Definitions = new HashSet<Type>();
@@ -19,7 +19,7 @@ namespace Sample.WebApp
         public ServiceContainer ServiceContainer { get; }
         public HashSet<Type> Definitions { get; }
 
-        public ServiceLocator RegisterAll(Type contractType, params Assembly[] assemblies)
+        public SampleDependencyResolver RegisterAll(Type contractType, params Assembly[] assemblies)
         {
             var serviceTypes = assemblies.SelectMany(x => x.GetTypes());
             if (contractType.IsGenericTypeDefinition)
@@ -45,14 +45,14 @@ namespace Sample.WebApp
             return this;
         }
 
-        public ServiceLocator Register(Type contractType, Type serviceType)
+        public SampleDependencyResolver Register(Type contractType, Type serviceType)
         {
             Definitions.Add(contractType);
             ServiceContainer.AddService(contractType, (container, requiredType) => Activator.CreateInstance(serviceType));
             return this;
         }
 
-        public ServiceLocator Register(Type contractType, object instance)
+        public SampleDependencyResolver Register(Type contractType, object instance)
         {
             Definitions.Add(contractType);
             ServiceContainer.AddService(contractType, instance);
