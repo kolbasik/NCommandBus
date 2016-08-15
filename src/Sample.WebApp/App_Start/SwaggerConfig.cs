@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Web;
 using System.Web.Http;
 using Newtonsoft.Json;
@@ -21,7 +20,6 @@ namespace Sample.WebApp
 
         public static void Register(HttpConfiguration configuration)
         {
-            // https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md
             configuration.EnableSwagger(
                 c =>
                 {
@@ -29,7 +27,7 @@ namespace Sample.WebApp
                         (apiDesc, targetApiVersion) => true,
                         vc =>
                         {
-                            vc.Version("RPC", "Sample.WebApp RPC");
+                            vc.Version("CommandBus", "Sample.WebApp CommandBus");
                             vc.Version("v1", "Sample.WebApp");
                         });
 
@@ -38,75 +36,86 @@ namespace Sample.WebApp
                     c.UseFullTypeNameInSchemaIds();
                     c.DescribeAllEnumsAsStrings();
 
-                    //c.SchemaFilter<ApplySchemaVendorExtensions>();
-                    //c.DocumentFilter<ApplyDocumentVendorExtensions>();
-                    //c.OperationFilter<AddDefaultResponse>();
-
-                    c.CustomProvider(defaultProvider => new CommandBusSwaggerProvider(defaultProvider));
+                    c.CustomProvider(defaultProvider => new CommandBusSwaggerProvider(defaultProvider, "CommandBus", CommandBusSwaggerProvider.CreateDefaultSchemaRegistry()));
                 }).EnableSwaggerUi(c => c.EnableDiscoveryUrlSelector());
         }
+    }
 
-        private sealed class CommandBusSwaggerProvider : ISwaggerProvider
+    public sealed class CommandBusSwaggerProvider : ISwaggerProvider
+    {
+        private readonly ISwaggerProvider defaultSwaggerProvider;
+
+        public CommandBusSwaggerProvider(ISwaggerProvider defaultSwaggerProvider, string apiVersion, SchemaRegistry schemaRegistry)
         {
-            private readonly ISwaggerProvider defaultSwaggerProvider;
-            private readonly SchemaRegistry schemaRegistry;
+            this.defaultSwaggerProvider = defaultSwaggerProvider;
+            this.ApiVersion = apiVersion;
+            this.SchemaRegistry = schemaRegistry;
+            this.PathResolver = CreateDefaultPathResolver(apiVersion);
+        }
 
-            public CommandBusSwaggerProvider(ISwaggerProvider defaultSwaggerProvider)
-            {
-                this.defaultSwaggerProvider = defaultSwaggerProvider;
-                this.schemaRegistry = new SchemaRegistry(
-                        new JsonSerializerSettings(),
-                        new Dictionary<Type, Func<Schema>>(),
-                        new List<ISchemaFilter>(),
-                        new IModelFilter[0],
-                        true,
-                        type => type.Name,
-                        true,
-                        false,
-                        true);
-            }
+        public string ApiVersion { get; }
+        public SchemaRegistry SchemaRegistry { get; }
+        public Func<Type, Type, string> PathResolver { get; set; }
 
-            public SwaggerDocument GetSwagger(string rootUrl, string apiVersion)
+        public SwaggerDocument GetSwagger(string rootUrl, string apiVersion)
+        {
+            // NOTE: https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md
+            var swaggerDocument = defaultSwaggerProvider.GetSwagger(rootUrl, apiVersion);
+            if (string.Equals(ApiVersion, apiVersion, StringComparison.OrdinalIgnoreCase))
             {
-                var swaggerDocument = defaultSwaggerProvider.GetSwagger(rootUrl, apiVersion);
-                if ("RPC".Equals(apiVersion, StringComparison.OrdinalIgnoreCase))
+                foreach (var commandHandlerType in Global.CommandHandlerTypes)
                 {
-                    foreach (var commandHandlerType in Global.CommandHandlerTypes)
-                    {
-                        var commandType = commandHandlerType.GenericTypeArguments[0];
-                        var resultType = commandHandlerType.GenericTypeArguments[1];
+                    var commandType = commandHandlerType.GenericTypeArguments[0];
+                    var resultType = commandHandlerType.GenericTypeArguments[1];
 
-                        var path = $"/CommandBus.ashx?commandType={HttpUtility.UrlEncode(GetTypeName(commandType))}&resultType={HttpUtility.UrlEncode(GetTypeName(resultType))}";
-                        swaggerDocument.paths.Add(
-                            path,
-                            new PathItem
-                            {
-                                post =
-                                    new Operation
+                    swaggerDocument.paths.Add(
+                        PathResolver.Invoke(commandType, resultType),
+                        new PathItem
+                        {
+                            post =
+                                new Operation
+                                {
+                                    tags = new List<string> { commandType.Name },
+                                    operationId = commandType.Name,
+                                    consumes = new List<string> { "application/json" },
+                                    produces = new List<string> { "application/json" },
+                                    parameters = new List<Parameter> { new Parameter { name = "command", @in = "body", required = true, schema = SchemaRegistry.GetOrRegister(commandType) } },
+                                    responses = new Dictionary<string, Response>()
                                     {
-                                        tags = new List<string> { commandType.Name },
-                                        operationId = commandType.FullName.Replace(".", "_"),
-                                        consumes = new List<string> { "application/json" },
-                                        produces = new List<string> { "application/json" },
-                                        parameters = new List<Parameter> { new Parameter { name = "command", @in = "body", required = true, schema = schemaRegistry.GetOrRegister(commandType) } },
-                                        responses = new Dictionary<string, Response>()
-                                        {
-                                            { "200", new Response { description = "OK", schema = schemaRegistry.GetOrRegister(resultType) } }
-                                        }
+                                        { "200", new Response { description = "OK", schema = SchemaRegistry.GetOrRegister(resultType) } }
                                     }
-                            });
-                    }
-                    swaggerDocument.definitions = schemaRegistry.Definitions;
+                                }
+                        });
                 }
-                return swaggerDocument;
+                swaggerDocument.definitions = SchemaRegistry.Definitions;
             }
+            return swaggerDocument;
+        }
 
-            private static string GetTypeName(Type type)
-            {
-                var assemblyQualifiedName = type.AssemblyQualifiedName;
-                var count = assemblyQualifiedName.IndexOf(',', assemblyQualifiedName.IndexOf(',') + 1);
-                return assemblyQualifiedName.Substring(0, count);
-            }
+        public static SchemaRegistry CreateDefaultSchemaRegistry()
+        {
+            return new SchemaRegistry(
+                new JsonSerializerSettings(),
+                new Dictionary<Type, Func<Schema>>(),
+                new ISchemaFilter[0],
+                new IModelFilter[0],
+                true,
+                type => string.Concat(type.DeclaringType?.Name, type.Name),
+                true,
+                false,
+                true);
+        }
+
+        public static Func<Type, Type, string> CreateDefaultPathResolver(string apiVersion)
+        {
+            return (commandType, resultType) => $"/{apiVersion}.ashx?commandType={HttpUtility.UrlEncode(GetTypeName(commandType))}&resultType={HttpUtility.UrlEncode(GetTypeName(resultType))}";
+        }
+
+        public static string GetTypeName(Type type)
+        {
+            var assemblyQualifiedName = type.AssemblyQualifiedName;
+            var count = assemblyQualifiedName.IndexOf(',', assemblyQualifiedName.IndexOf(',') + 1);
+            return assemblyQualifiedName.Substring(0, count);
         }
     }
 }

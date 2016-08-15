@@ -24,6 +24,7 @@ namespace Sample.ConsoleApp
 
             var serviceContainer = new ServiceContainer();
             serviceContainer.AddService(typeof (ICommandHandler<AddValues, AddValuesResult>), new Calculator());
+            serviceContainer.AddService(typeof (ICommandHandler<SubValues, SubValuesResult>), new Calculator());
             serviceContainer.AddService(typeof (ICommandHandler<GetAppName, GetAppName.Result>), new AppDataHandler());
             try
             {
@@ -53,6 +54,10 @@ namespace Sample.ConsoleApp
             var addValues = new AddValues {A = 2, B = 3};
             var addValuesResult = await commandBus.Send<AddValuesResult, AddValues>(addValues).ConfigureAwait(false);
             Console.WriteLine($"{addValues.A} + {addValues.B} = {addValuesResult.Result}");
+
+            var subValues = new AddValues {A = 10, B = 7};
+            var subValuesResult = await commandBus.Send<AddValuesResult, AddValues>(subValues).ConfigureAwait(false);
+            Console.WriteLine($"{subValues.A} + {subValues.B} = {subValuesResult.Result}");
         }
     }
 }
