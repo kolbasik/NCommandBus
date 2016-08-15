@@ -40,7 +40,7 @@ namespace kolbasik.NCommandBus.Web
                     throw new ArgumentException(@"Could not resolve the command or result types.");
                 }
 
-                var mediaTypeFormatter = MediaTypeFormatters.FindReader(commandType, new MediaTypeHeaderValue(httpRequest.ContentType));
+                var mediaTypeFormatter = MediaTypeFormatters.FindReader(commandType, new MediaTypeHeaderValue(httpRequest.ContentType.Split(';')[0]));
                 var command = await mediaTypeFormatter.ReadFromStreamAsync(commandType, httpRequest.InputStream, null, null).ConfigureAwait(false);
                 if (command == null)
                 {
