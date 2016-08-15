@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using System.Web;
 using kolbasik.NCommandBus.Core;
 using kolbasik.NCommandBus.Web;
-using Sample.WebApp.AspNet;
 
 namespace Sample.WebApp
 {

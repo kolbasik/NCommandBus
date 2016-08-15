@@ -1,6 +1,5 @@
 using System.Web.Http;
 using Sample.WebApp;
-using Sample.WebApp.AspNet;
 using Swashbuckle.Application;
 using WebActivatorEx;
 

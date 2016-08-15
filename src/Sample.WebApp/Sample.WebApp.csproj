@@ -97,7 +97,7 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="AspNet\CommandBusSwaggerProvider.cs" />
+    <Compile Include="CommandBusSwaggerProvider.cs" />
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -106,7 +106,7 @@
     <Compile Include="CommandBus.ashx.cs">
       <DependentUpon>CommandBus.ashx</DependentUpon>
     </Compile>
-    <Compile Include="AspNet\ServiceLocator.cs" />
+    <Compile Include="ServiceLocator.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CommandBus.Abstractions\Abstractions.csproj">
