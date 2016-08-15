@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Web;
 using kolbasik.NCommandBus.Core;
 using kolbasik.NCommandBus.Web;
+using Sample.WebApp.AspNet;
 
 namespace Sample.WebApp
 {
@@ -10,7 +11,7 @@ namespace Sample.WebApp
     {
         private readonly CommandBusRpc commandBusRpc;
 
-        public CommandBusHttpHandler() : this(Global.CommandBus)
+        public CommandBusHttpHandler() : this(ServiceLocator.Instance.Resolve<CommandBus>())
         {
         }
 

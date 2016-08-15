@@ -1,34 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
+﻿using System.Reflection;
 using System.Web;
 using kolbasik.NCommandBus.Abstractions;
 using kolbasik.NCommandBus.Core;
 using kolbasik.NCommandBus.Host;
-using Sample.Commands;
-using Sample.Handles;
 
 namespace Sample.WebApp
 {
     public class Global : HttpApplication
     {
-        public static readonly CommandBus CommandBus;
-        public static readonly List<Type> CommandHandlerTypes;
-
         static Global()
         {
-            var serviceContainer = new ServiceContainer();
-            serviceContainer.AddService(typeof(ICommandHandler<AddValues, AddValuesResult>), new Calculator());
-            serviceContainer.AddService(typeof(ICommandHandler<SubValues, SubValuesResult>), new Calculator());
-            serviceContainer.AddService(typeof(ICommandHandler<GetAppName, GetAppName.Result>), new AppDataHandler());
-
-            CommandHandlerTypes = new List<Type>
-            {
-                typeof(ICommandHandler<AddValues, AddValuesResult>),
-                typeof(ICommandHandler<SubValues, SubValuesResult>),
-                typeof(ICommandHandler<GetAppName, GetAppName.Result>)
-            };
-            CommandBus = new CommandBus(new HostCommandInvoker(serviceContainer));
+            var serviceLocator = ServiceLocator.Instance;
+            serviceLocator.RegisterAll(typeof(ICommandHandler<,>), Assembly.Load("Sample.Handles"));
+            serviceLocator.Register(typeof(CommandBus), new CommandBus(new HostCommandInvoker(serviceLocator.ServiceContainer)));
         }
     }
 }
