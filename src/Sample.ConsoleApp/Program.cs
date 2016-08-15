@@ -30,7 +30,7 @@ namespace Sample.ConsoleApp
                 var hostCommandBus = new CommandBus(new HostCommandInvoker(serviceContainer));
                 await Perform(hostCommandBus).ConfigureAwait(false);
 
-                var httpCommandBus = new CommandBus(new HttpCommandInvoker(new Uri(@"http://localhost:58452/RPC.ashx")));
+                var httpCommandBus = new CommandBus(new HttpCommandInvoker(new Uri(@"http://localhost:58452/CommandBus.ashx")));
                 await Perform(httpCommandBus).ConfigureAwait(false);
             }
             catch (Exception ex)
@@ -47,8 +47,7 @@ namespace Sample.ConsoleApp
 
         private async Task Perform(CommandBus commandBus)
         {
-            var appNameResult =
-                await commandBus.Send<GetAppName.Result, GetAppName>(new GetAppName()).ConfigureAwait(false);
+            var appNameResult = await commandBus.Send<GetAppName.Result, GetAppName>(new GetAppName()).ConfigureAwait(false);
             Console.WriteLine($"AppName: {appNameResult.AppName}");
 
             var addValues = new AddValues {A = 2, B = 3};

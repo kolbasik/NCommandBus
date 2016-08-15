@@ -28,8 +28,8 @@ namespace kolbasik.NCommandBus.Web
             httpResponse.ContentEncoding = Encoding.UTF8;
             try
             {
-                var httpCommandType = httpRequest.Params[@"X-RPC-CommandType"] ?? httpRequest.Headers.GetValues(@"X-RPC-CommandType").FirstOrDefault();
-                var httpResultType = httpRequest.Params[@"X-RPC-ResultType"] ?? httpRequest.Headers.GetValues(@"X-RPC-ResultType").FirstOrDefault();
+                var httpCommandType = httpRequest.Params[@"commandType"] ?? httpRequest.Headers.GetValues(@"X-RPC-CommandType").FirstOrDefault();
+                var httpResultType = httpRequest.Params[@"resultType"] ?? httpRequest.Headers.GetValues(@"X-RPC-ResultType").FirstOrDefault();
 
                 var commandType = Type.GetType(httpCommandType, false, true);
                 var resultType = Type.GetType(httpResultType, false, true);
