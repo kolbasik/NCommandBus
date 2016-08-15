@@ -38,6 +38,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Remoting" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\CommonAssemblyInfo.cs">
@@ -66,6 +67,10 @@
     <ProjectReference Include="..\Core\Core.csproj">
       <Project>{BCCABE8E-137E-4D46-A005-BFBACAC0ED90}</Project>
       <Name>Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Remote\Remote.csproj">
+      <Project>{0D3BF2F7-E6E7-4502-B30E-4AF1102EEBB3}</Project>
+      <Name>Remote</Name>
     </ProjectReference>
     <ProjectReference Include="..\Sample.Commands\Sample.Commands.csproj">
       <Project>{DF852726-8AEA-4887-924A-9A00380C7D75}</Project>

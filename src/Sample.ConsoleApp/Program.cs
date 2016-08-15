@@ -5,6 +5,7 @@ using kolbasik.NCommandBus.Abstractions;
 using kolbasik.NCommandBus.Core;
 using kolbasik.NCommandBus.Host;
 using kolbasik.NCommandBus.Http;
+using kolbasik.NCommandBus.Remote;
 using Sample.Commands;
 using Sample.Handles;
 
@@ -28,11 +29,21 @@ namespace Sample.ConsoleApp
             serviceContainer.AddService(typeof (ICommandHandler<GetAppName, GetAppName.Result>), new AppDataHandler());
             try
             {
+                Console.WriteLine(@"SelfHost:");
                 var hostCommandBus = new CommandBus(new HostCommandInvoker(serviceContainer));
                 await Perform(hostCommandBus).ConfigureAwait(false);
 
+                Console.WriteLine(@"Http:");
                 var httpCommandBus = new CommandBus(new HttpCommandInvoker(new Uri(@"http://localhost:58452/CommandBus.ashx")));
                 await Perform(httpCommandBus).ConfigureAwait(false);
+
+                Console.WriteLine(@"Remote:");
+                using (var channel = RemoteChannel.Tcp())
+                {
+                    var remoteProxy = channel.CreateProxy<RemoteCommandInvoker.RemoteProxy>("tcp://localhost:8081/RPC");
+                    var remoteCommandBus = new CommandBus(new RemoteCommandInvoker(remoteProxy));
+                    await Perform(remoteCommandBus).ConfigureAwait(false);
+                }
             }
             catch (Exception ex)
             {
