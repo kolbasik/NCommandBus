@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Net.Http.Formatting;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Http;
 using kolbasik.NCommandBus.Core;
 using kolbasik.NCommandBus.Web;
 
@@ -10,15 +12,16 @@ namespace Sample.WebApp
     {
         private readonly CommandBusRpc commandBusRpc;
 
-        public CommandBusHttpHandler() : this(ServiceLocator.Instance.Resolve<CommandBus>())
+        public CommandBusHttpHandler() : this(ServiceLocator.Instance.Resolve<CommandBus>(), GlobalConfiguration.Configuration.Formatters)
         {
         }
 
-        public CommandBusHttpHandler(CommandBus commandBus)
+        public CommandBusHttpHandler(CommandBus commandBus, MediaTypeFormatterCollection mediaTypeFormatterCollection)
         {
-            if (commandBus == null) throw new ArgumentNullException(nameof(commandBus));
+            if (commandBus == null)
+                throw new ArgumentNullException(nameof(commandBus));
 
-            this.commandBusRpc = new CommandBusRpc(commandBus);
+            commandBusRpc = new CommandBusRpc(commandBus, mediaTypeFormatterCollection);
         }
 
         public override bool IsReusable => true;

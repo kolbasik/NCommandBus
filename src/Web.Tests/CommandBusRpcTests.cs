@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.IO;
 using System.Net;
+using System.Net.Http.Formatting;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
@@ -26,7 +27,7 @@ namespace Web.Tests
         {
             fixture = new Fixture();
             serviceProvider = A.Fake<IServiceProvider>();
-            commandBusRpc = new CommandBusRpc(new CommandBus(new HostCommandInvoker(serviceProvider)));
+            commandBusRpc = new CommandBusRpc(new CommandBus(new HostCommandInvoker(serviceProvider)), new MediaTypeFormatterCollection());
         }
 
         [Fact]
@@ -34,6 +35,8 @@ namespace Web.Tests
         {
             // arrange
             var httpContext = A.Fake<HttpContextBase>();
+            A.CallTo(() => httpContext.Response).Returns(A.Fake<HttpResponseBase>());
+            A.CallTo(() => httpContext.Response.OutputStream).Returns(new MemoryStream());
 
             // act
             await commandBusRpc.ProcessRequest(httpContext);
@@ -54,18 +57,17 @@ namespace Web.Tests
             A.CallTo(() => httpContext.Request.Params).Returns(new NameValueCollection());
             A.CallTo(() => httpContext.Request.InputStream).Returns(new MemoryStream());
             A.CallTo(() => httpContext.Response).Returns(A.Fake<HttpResponseBase>());
+            A.CallTo(() => httpContext.Response.OutputStream).Returns(new MemoryStream());
             httpContext.Request.Params["commandType"] = typeof (TestCommand).AssemblyQualifiedName;
             httpContext.Request.Params["resultType"] = typeof (TestResult).AssemblyQualifiedName;
 
-            var writer = new StreamWriter(httpContext.Request.InputStream);
-            writer.Write(JsonConvert.SerializeObject(command));
-            writer.Flush();
+            httpContext.Request.ContentType = "application/json";
+            new StreamWriter(httpContext.Request.InputStream) { AutoFlush = true }.Write(JsonConvert.SerializeObject(command));
             httpContext.Request.InputStream.Position = 0;
 
             var commandHandler = A.Fake<ICommandHandler<TestCommand, TestResult>>();
             A.CallTo(() => commandHandler.Handle(A<TestCommand>._, CancellationToken.None)).Returns(result);
-            A.CallTo(() => serviceProvider.GetService(typeof (ICommandHandler<TestCommand, TestResult>)))
-                .Returns(commandHandler);
+            A.CallTo(() => serviceProvider.GetService(typeof (ICommandHandler<TestCommand, TestResult>))).Returns(commandHandler);
 
             // act
             await commandBusRpc.ProcessRequest(httpContext).ConfigureAwait(false);
@@ -73,9 +75,8 @@ namespace Web.Tests
             // assert
             Assert.Equal((int) HttpStatusCode.OK, httpContext.Response.StatusCode);
             Assert.Equal("application/json", httpContext.Response.ContentType);
-            A.CallTo(httpContext.Response)
-                .Where(x => x.Method.Name == "Write" && x.GetArgument<string>(0).Contains(result.Unique.ToString()))
-                .MustHaveHappened();
+            httpContext.Response.OutputStream.Position = 0;
+            Assert.Contains(result.Unique.ToString(), new StreamReader(httpContext.Response.OutputStream).ReadToEnd());
         }
 
         public class TestCommand
