@@ -45,6 +45,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remote", "Remote\Remote.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.Core", "Sample.Core\Sample.Core.csproj", "{5181FDAC-E93E-466A-AA00-A5AF66F566B0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MassTransit", "MassTransit\MassTransit.csproj", "{7ED053EB-1F5B-4316-879D-CB3BCC07E908}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.MassTransitApp", "Sample.MassTransitApp\Sample.MassTransitApp.csproj", "{245B14B8-3F52-44F7-82DB-F47BA020D559}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -115,6 +119,14 @@ Global
 		{5181FDAC-E93E-466A-AA00-A5AF66F566B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5181FDAC-E93E-466A-AA00-A5AF66F566B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5181FDAC-E93E-466A-AA00-A5AF66F566B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7ED053EB-1F5B-4316-879D-CB3BCC07E908}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7ED053EB-1F5B-4316-879D-CB3BCC07E908}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7ED053EB-1F5B-4316-879D-CB3BCC07E908}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7ED053EB-1F5B-4316-879D-CB3BCC07E908}.Release|Any CPU.Build.0 = Release|Any CPU
+		{245B14B8-3F52-44F7-82DB-F47BA020D559}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{245B14B8-3F52-44F7-82DB-F47BA020D559}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{245B14B8-3F52-44F7-82DB-F47BA020D559}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{245B14B8-3F52-44F7-82DB-F47BA020D559}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -126,5 +138,6 @@ Global
 		{00F4936E-210D-428B-9EBE-B17E04F79F55} = {87B9EB3F-29A2-4AF1-ABD6-735E2308E2D7}
 		{B3E6B8A1-EC3C-4756-8BF4-DCFD72593CD3} = {87B9EB3F-29A2-4AF1-ABD6-735E2308E2D7}
 		{5181FDAC-E93E-466A-AA00-A5AF66F566B0} = {87B9EB3F-29A2-4AF1-ABD6-735E2308E2D7}
+		{245B14B8-3F52-44F7-82DB-F47BA020D559} = {87B9EB3F-29A2-4AF1-ABD6-735E2308E2D7}
 	EndGlobalSection
 EndGlobal

@@ -22,6 +22,8 @@ namespace kolbasik.NCommandBus.Core
         public List<ICommandValidator> CommandValidators { get; }
 
         public async Task<TResult> Send<TResult, TCommand>(TCommand command, CancellationToken cancellationToken)
+            where TCommand : class
+            where TResult : class
         {
             var context = new CommandContext<TCommand, TResult>(command);
 

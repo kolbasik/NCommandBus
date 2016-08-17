@@ -17,7 +17,7 @@ namespace kolbasik.NCommandBus.Host
             this.serviceProvider = serviceProvider;
         }
 
-        public Task<TResult> Invoke<TResult, TCommand>(TCommand command, CancellationToken cancellationToken)
+        public Task<TResult> Invoke<TResult, TCommand>(TCommand command, CancellationToken cancellationToken) where TCommand : class where TResult : class
         {
             var commandHandlerType = typeof(ICommandHandler<TCommand, TResult>);
             var commandHandler = serviceProvider.GetService(commandHandlerType) as ICommandHandler<TCommand, TResult>;

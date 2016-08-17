@@ -17,6 +17,8 @@ namespace kolbasik.NCommandBus.Remote
         }
 
         public Task<TResult> Invoke<TResult, TCommand>(TCommand command, CancellationToken cancellationToken)
+            where TCommand : class
+            where TResult : class
         {
             var result = (TResult) Proxy.Invoke(command, typeof(TCommand), typeof(TResult));
             return Task.FromResult(result);

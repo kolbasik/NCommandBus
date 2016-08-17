@@ -33,6 +33,8 @@ namespace kolbasik.NCommandBus.Http
         public MediaTypeFormatterCollection MediaTypeFormatterCollection { get; }
 
         public async Task<TResult> Invoke<TResult, TCommand>(TCommand command, CancellationToken cancellationToken)
+            where TCommand : class
+            where TResult : class
         {
             string requestBody = null, responseBody = null;
             var requestContent = new ObjectContent<TCommand>(command, MediaTypeFormatter);

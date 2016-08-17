@@ -5,10 +5,11 @@ using kolbasik.NCommandBus.Abstractions;
 using kolbasik.NCommandBus.Core;
 using kolbasik.NCommandBus.Host;
 using kolbasik.NCommandBus.Http;
+using kolbasik.NCommandBus.MassTransit;
 using kolbasik.NCommandBus.Remote;
+using MassTransit;
 using Sample.Commands;
 using Sample.Core;
-using Sample.Handles;
 
 namespace Sample.ConsoleApp
 {
@@ -44,6 +45,22 @@ namespace Sample.ConsoleApp
                     var remoteCommandBus = new CommandBus(new RemoteCommandInvoker(remoteProxy));
                     await Perform(remoteCommandBus).ConfigureAwait(false);
                 }
+
+                Console.WriteLine(@"MassTransit:");
+                var busControl = Bus.Factory.CreateUsingRabbitMq(x =>
+                {
+                    x.Host(new Uri("rabbitmq://localhost:15672/"), h =>
+                    {
+                        h.Username("guest");
+                        h.Password("guest");
+                    });
+                });
+                await busControl.StartAsync().ConfigureAwait(false);
+
+                var massTransitCommandBus = new CommandBus(new MassTransitCommandInvoker(busControl, new Uri(@"rabbitmq://devrabbit.dtap.dcinfra.it:15672/skolbasin/CommandBus"), TimeSpan.FromSeconds(15)));
+                await Perform(massTransitCommandBus).ConfigureAwait(false);
+
+                await busControl.StopAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
