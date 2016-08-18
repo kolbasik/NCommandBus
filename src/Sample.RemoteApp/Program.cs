@@ -25,7 +25,7 @@ namespace Sample.RemoteApp
             {
                 using (RemoteChannel.Tcp(8081)) // NOTE: or RemoteChannel.Http(8080)
                 {
-                    var remoteCommandInvokerProxy = new RemoteCommandInvoker.RemoteProxy(new HostCommandInvoker(dependencyResolver.ServiceContainer));
+                    var remoteCommandInvokerProxy = new RemoteCommandInvoker.RemoteProxy(new InProcessCommandInvoker(dependencyResolver.ServiceContainer));
                     ObjRef hostCommandBusRef = RemotingServices.Marshal(remoteCommandInvokerProxy, "RPC");
                     Console.WriteLine("RPC.URI: " + hostCommandBusRef.URI);
 

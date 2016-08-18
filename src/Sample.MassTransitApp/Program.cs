@@ -23,7 +23,7 @@ namespace Sample.MassTransitApp
             var dependencyResolver = new SampleDependencyResolver();
             dependencyResolver.RegisterAll(typeof(ICommandHandler<,>), Assembly.Load("Sample.Handles"));
 
-            var hostCommandBus = new CommandBus(new HostCommandInvoker(dependencyResolver.ServiceContainer));
+            var hostCommandBus = new CommandBus(new InProcessCommandInvoker(dependencyResolver.ServiceContainer));
             try
             {
                 var busControl = Bus.Factory.CreateUsingRabbitMq(x =>

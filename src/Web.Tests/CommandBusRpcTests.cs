@@ -27,7 +27,7 @@ namespace Web.Tests
         {
             fixture = new Fixture();
             serviceProvider = A.Fake<IServiceProvider>();
-            commandBusRpc = new CommandBusRpc(new CommandBus(new HostCommandInvoker(serviceProvider)), new MediaTypeFormatterCollection());
+            commandBusRpc = new CommandBusRpc(new CommandBus(new InProcessCommandInvoker(serviceProvider)), new MediaTypeFormatterCollection());
         }
 
         [Fact]

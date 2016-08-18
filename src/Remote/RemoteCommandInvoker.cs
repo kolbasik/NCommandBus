@@ -9,11 +9,13 @@ namespace kolbasik.NCommandBus.Remote
     {
         public RemoteProxy Proxy { get; }
 
-        public RemoteCommandInvoker(RemoteProxy proxy)
+        public RemoteCommandInvoker(RemoteChannel channel, string address)
         {
-            if (proxy == null)
-                throw new ArgumentNullException(nameof(proxy));
-            Proxy = proxy;
+            if (channel == null)
+                throw new ArgumentNullException(nameof(channel));
+            if (address == null)
+                throw new ArgumentNullException(nameof(address));
+            Proxy = channel.CreateProxy<RemoteProxy>(address);
         }
 
         public Task<TResult> Invoke<TResult, TCommand>(TCommand command, CancellationToken cancellationToken)

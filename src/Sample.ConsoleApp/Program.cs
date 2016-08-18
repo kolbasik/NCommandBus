@@ -31,7 +31,7 @@ namespace Sample.ConsoleApp
             try
             {
                 Console.WriteLine(@"SelfHost:");
-                var hostCommandBus = new CommandBus(new HostCommandInvoker(dependencyResolver.ServiceContainer));
+                var hostCommandBus = new CommandBus(new InProcessCommandInvoker(dependencyResolver.ServiceContainer));
                 await Perform(hostCommandBus).ConfigureAwait(false);
 
                 Console.WriteLine(@"Http:");
@@ -41,8 +41,7 @@ namespace Sample.ConsoleApp
                 Console.WriteLine(@"Remote:");
                 using (var channel = RemoteChannel.Tcp())
                 {
-                    var remoteProxy = channel.CreateProxy<RemoteCommandInvoker.RemoteProxy>("tcp://localhost:8081/RPC");
-                    var remoteCommandBus = new CommandBus(new RemoteCommandInvoker(remoteProxy));
+                    var remoteCommandBus = new CommandBus(new RemoteCommandInvoker(channel, "tcp://localhost:8081/RPC"));
                     await Perform(remoteCommandBus).ConfigureAwait(false);
                 }
 
@@ -57,7 +56,7 @@ namespace Sample.ConsoleApp
                 });
                 await busControl.StartAsync().ConfigureAwait(false);
 
-                var massTransitCommandBus = new CommandBus(new MassTransitCommandInvoker(busControl, new Uri(@"rabbitmq://devrabbit.dtap.dcinfra.it:15672/skolbasin/CommandBus"), TimeSpan.FromSeconds(15)));
+                var massTransitCommandBus = new CommandBus(new MassTransitCommandInvoker(busControl, new Uri(@"rabbitmq://localhost:15672/CommandBus"), TimeSpan.FromSeconds(15)));
                 await Perform(massTransitCommandBus).ConfigureAwait(false);
 
                 await busControl.StopAsync().ConfigureAwait(false);
@@ -83,9 +82,9 @@ namespace Sample.ConsoleApp
             var addValuesResult = await commandBus.Send<AddValuesResult, AddValues>(addValues).ConfigureAwait(false);
             Console.WriteLine($"{addValues.A} + {addValues.B} = {addValuesResult.Result}");
 
-            var subValues = new AddValues {A = 10, B = 7};
-            var subValuesResult = await commandBus.Send<AddValuesResult, AddValues>(subValues).ConfigureAwait(false);
-            Console.WriteLine($"{subValues.A} + {subValues.B} = {subValuesResult.Result}");
+            var subValues = new SubValues { A = 10, B = 7 };
+            var subValuesResult = await commandBus.Send<SubValuesResult, SubValues>(subValues).ConfigureAwait(false);
+            Console.WriteLine($"{subValues.A} - {subValues.B} = {subValuesResult.Result}");
         }
     }
 }

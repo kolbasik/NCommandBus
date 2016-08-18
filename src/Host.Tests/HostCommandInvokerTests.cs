@@ -13,13 +13,13 @@ namespace kolbasik.NCommandBus.Host.Tests
     {
         private readonly Fixture fixture;
         private readonly ServiceContainer serviceContainer;
-        private readonly HostCommandInvoker hostCommandInvoker;
+        private readonly InProcessCommandInvoker hostCommandInvoker;
 
         public HostCommandInvokerTests()
         {
             fixture = new Fixture();
             serviceContainer = new ServiceContainer();
-            hostCommandInvoker = new HostCommandInvoker(serviceContainer);
+            hostCommandInvoker = new InProcessCommandInvoker(serviceContainer);
         }
 
         [Fact]
