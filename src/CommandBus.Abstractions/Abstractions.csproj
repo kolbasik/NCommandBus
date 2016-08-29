@@ -39,11 +39,14 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ICommandBus.cs" />
-    <Compile Include="CommandContext.cs" />
+    <Compile Include="IMessageBus.cs" />
+    <Compile Include="MessageContext.cs" />
     <Compile Include="ICommandHandler.cs" />
-    <Compile Include="ICommandInvoker.cs" />
-    <Compile Include="ICommandObserver.cs" />
-    <Compile Include="ICommandValidator.cs" />
+    <Compile Include="IMessageInvoker.cs" />
+    <Compile Include="IMessageObserver.cs" />
+    <Compile Include="IMessageValidator.cs" />
+    <Compile Include="IQueryBus.cs" />
+    <Compile Include="IQueryHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

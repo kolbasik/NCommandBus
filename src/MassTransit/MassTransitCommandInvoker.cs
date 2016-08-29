@@ -6,13 +6,13 @@ using MassTransit;
 
 namespace kolbasik.NCommandBus.MassTransit
 {
-    public sealed class MassTransitCommandInvoker : ICommandInvoker
+    public sealed class MassTransitMessageInvoker : IMessageInvoker
     {
         private readonly IBusControl busControl;
         private readonly Uri address;
         private readonly TimeSpan timeout;
 
-        public MassTransitCommandInvoker(IBusControl busControl, Uri address, TimeSpan timeout)
+        public MassTransitMessageInvoker(IBusControl busControl, Uri address, TimeSpan timeout)
         {
             if (busControl == null)
                 throw new ArgumentNullException(nameof(busControl));
@@ -21,12 +21,17 @@ namespace kolbasik.NCommandBus.MassTransit
             this.timeout = timeout;
         }
 
-        public async Task<TResult> Invoke<TResult, TCommand>(TCommand command, CancellationToken cancellationToken)
-            where TCommand : class
+        public Task Invoke<TCommand>(TCommand command, CancellationToken cancellationToken) where TCommand : class
+        {
+            return busControl.Publish<TCommand>(command, cancellationToken);
+        }
+
+        public async Task<TResult> Invoke<TResult, TQuery>(TQuery query, CancellationToken cancellationToken)
+            where TQuery : class
             where TResult : class
         {
-            var client = busControl.CreateRequestClient<TCommand, TResult>(address, timeout);
-            var result = await client.Request(command).ConfigureAwait(false);
+            var client = busControl.CreateRequestClient<TQuery, TResult>(address, timeout);
+            var result = await client.Request(query, cancellationToken).ConfigureAwait(false);
             return result;
         }
     }

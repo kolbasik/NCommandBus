@@ -19,13 +19,13 @@ namespace Sample.RemoteApp
         private async Task Run()
         {
             var dependencyResolver = new SampleDependencyResolver();
-            dependencyResolver.RegisterAll(typeof(ICommandHandler<,>), Assembly.Load("Sample.Handles"));
+            dependencyResolver.RegisterTypes(typeof(IQueryHandler<,>), Assembly.Load("Sample.Handles"));
 
             try
             {
                 using (RemoteChannel.Tcp(8081)) // NOTE: or RemoteChannel.Http(8080)
                 {
-                    var remoteCommandInvokerProxy = new RemoteCommandInvoker.RemoteProxy(new InProcessCommandInvoker(dependencyResolver.ServiceContainer));
+                    var remoteCommandInvokerProxy = new RemoteMessageInvoker.RemoteProxy(new InProcessMessageInvoker(dependencyResolver.ServiceContainer));
                     ObjRef hostCommandBusRef = RemotingServices.Marshal(remoteCommandInvokerProxy, "RPC");
                     Console.WriteLine("RPC.URI: " + hostCommandBusRef.URI);
 

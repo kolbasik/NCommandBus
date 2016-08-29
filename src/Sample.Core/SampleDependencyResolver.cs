@@ -19,7 +19,7 @@ namespace Sample.Core
         public ServiceContainer ServiceContainer { get; }
         public HashSet<Type> Definitions { get; }
 
-        public SampleDependencyResolver RegisterAll(Type contractType, params Assembly[] assemblies)
+        public SampleDependencyResolver RegisterTypes(Type contractType, params Assembly[] assemblies)
         {
             var serviceTypes = assemblies.SelectMany(x => x.GetTypes());
             if (contractType.IsGenericTypeDefinition)

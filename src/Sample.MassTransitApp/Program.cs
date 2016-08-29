@@ -21,9 +21,9 @@ namespace Sample.MassTransitApp
         private async Task Run()
         {
             var dependencyResolver = new SampleDependencyResolver();
-            dependencyResolver.RegisterAll(typeof(ICommandHandler<,>), Assembly.Load("Sample.Handles"));
+            dependencyResolver.RegisterTypes(typeof(IQueryHandler<,>), Assembly.Load("Sample.Handles"));
 
-            var hostCommandBus = new CommandBus(new InProcessCommandInvoker(dependencyResolver.ServiceContainer));
+            var hostCommandBus = new MessageBus(new InProcessMessageInvoker(dependencyResolver.ServiceContainer));
             try
             {
                 var busControl = Bus.Factory.CreateUsingRabbitMq(x =>

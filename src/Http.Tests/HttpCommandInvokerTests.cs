@@ -18,13 +18,13 @@ namespace kolbasik.NCommandBus.Http.Tests
     {
         private readonly Fixture fixture;
         private readonly HttpMessageHandler httpMessageHandler;
-        private readonly HttpCommandInvoker httpCommandInvoker;
+        private readonly HttpMessageInvoker httpMessageInvoker;
 
         public HttpCommandInvokerTests()
         {
             fixture = new Fixture();
             httpMessageHandler = A.Fake<HttpMessageHandler>();
-            httpCommandInvoker = new HttpCommandInvoker(
+            httpMessageInvoker = new HttpMessageInvoker(
                 fixture.Create<Uri>(),
                 httpMessageHandler,
                 new MediaTypeFormatterCollection());
@@ -43,7 +43,7 @@ namespace kolbasik.NCommandBus.Http.Tests
                 .Returns(new HttpResponseMessage(HttpStatusCode.OK));
 
             // act
-            await httpCommandInvoker.Invoke<TestResult, TestCommand>(command, CancellationToken.None).ConfigureAwait(false);
+            await httpMessageInvoker.Invoke<TestResult, TestCommand>(command, CancellationToken.None).ConfigureAwait(false);
 
             // assert
             Assert.NotNull(actual);
@@ -65,7 +65,7 @@ namespace kolbasik.NCommandBus.Http.Tests
             var command = fixture.Create<TestCommand>();
 
             // act
-            var actual = await httpCommandInvoker.Invoke<TestResult, TestCommand>(command, CancellationToken.None).ConfigureAwait(false);
+            var actual = await httpMessageInvoker.Invoke<TestResult, TestCommand>(command, CancellationToken.None).ConfigureAwait(false);
 
             // assert
             Assert.Null(actual);
@@ -80,7 +80,7 @@ namespace kolbasik.NCommandBus.Http.Tests
 
             var response = new HttpResponseMessage(HttpStatusCode.OK);
             response.Headers.Add("X-RPC-ResultType", typeof(TestResult).FullName);
-            var json = await new ObjectContent<TestResult>(expected, httpCommandInvoker.MediaTypeFormatter).ReadAsStringAsync().ConfigureAwait(false);
+            var json = await new ObjectContent<TestResult>(expected, httpMessageInvoker.MediaTypeFormatter).ReadAsStringAsync().ConfigureAwait(false);
             response.Content = new StringContent(json, Encoding.UTF8, "application/json");
 
             A.CallTo(httpMessageHandler).Where(x => x.Method.Name == "SendAsync")
@@ -88,7 +88,7 @@ namespace kolbasik.NCommandBus.Http.Tests
                 .Returns(response);
 
             // act
-            var actual = await httpCommandInvoker.Invoke<TestResult, TestCommand>(command, CancellationToken.None).ConfigureAwait(false);
+            var actual = await httpMessageInvoker.Invoke<TestResult, TestCommand>(command, CancellationToken.None).ConfigureAwait(false);
 
             // assert
             Assert.NotNull(actual);

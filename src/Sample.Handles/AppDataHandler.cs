@@ -6,9 +6,9 @@ using Sample.Commands;
 
 namespace Sample.Handles
 {
-    public sealed class AppDataHandler: ICommandHandler<GetAppName, GetAppName.Result>
+    public sealed class AppDataHandler: IQueryHandler<GetAppName, GetAppName.Result>
     {
-        public Task<GetAppName.Result> Handle(GetAppName command, CancellationToken cancellationToken)
+        public Task<GetAppName.Result> Handle(GetAppName query, CancellationToken cancellationToken)
         {
             var result = new GetAppName.Result { AppName = AppDomain.CurrentDomain.FriendlyName };
             return Task.FromResult(result);

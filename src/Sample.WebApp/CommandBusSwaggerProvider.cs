@@ -32,7 +32,7 @@ namespace Sample.WebApp
             var swaggerDocument = defaultSwaggerProvider.GetSwagger(rootUrl, apiVersion);
             if (string.Equals(ApiVersion, apiVersion, StringComparison.OrdinalIgnoreCase))
             {
-                var commandHandlerTypes = Definitions.Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICommandHandler<,>));
+                var commandHandlerTypes = Definitions.Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IQueryHandler<,>));
                 foreach (var commandHandlerType in commandHandlerTypes)
                 {
                     var commandType = commandHandlerType.GenericTypeArguments[0];

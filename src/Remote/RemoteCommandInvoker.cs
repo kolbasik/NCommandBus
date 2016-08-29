@@ -5,11 +5,11 @@ using kolbasik.NCommandBus.Abstractions;
 
 namespace kolbasik.NCommandBus.Remote
 {
-    public sealed class RemoteCommandInvoker : ICommandInvoker
+    public sealed class RemoteMessageInvoker : IMessageInvoker
     {
         public RemoteProxy Proxy { get; }
 
-        public RemoteCommandInvoker(RemoteChannel channel, string address)
+        public RemoteMessageInvoker(RemoteChannel channel, string address)
         {
             if (channel == null)
                 throw new ArgumentNullException(nameof(channel));
@@ -18,11 +18,16 @@ namespace kolbasik.NCommandBus.Remote
             Proxy = channel.CreateProxy<RemoteProxy>(address);
         }
 
-        public Task<TResult> Invoke<TResult, TCommand>(TCommand command, CancellationToken cancellationToken)
-            where TCommand : class
+        public Task Invoke<TCommand>(TCommand command, CancellationToken cancellationToken) where TCommand : class
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<TResult> Invoke<TResult, TQuery>(TQuery query, CancellationToken cancellationToken)
+            where TQuery : class
             where TResult : class
         {
-            var result = (TResult) Proxy.Invoke(command, typeof(TCommand), typeof(TResult));
+            var result = (TResult) Proxy.Invoke(query, typeof(TQuery), typeof(TResult));
             return Task.FromResult(result);
         }
 
@@ -32,17 +37,17 @@ namespace kolbasik.NCommandBus.Remote
         /// <seealso cref="System.MarshalByRefObject" />
         public sealed class RemoteProxy : MarshalByRefObject
         {
-            private readonly ICommandInvoker commandInvoker;
+            private readonly IMessageInvoker messageInvoker;
 
-            public RemoteProxy(ICommandInvoker commandInvoker)
+            public RemoteProxy(IMessageInvoker messageInvoker)
             {
-                this.commandInvoker = commandInvoker;
+                this.messageInvoker = messageInvoker;
             }
 
             public object Invoke(object command, Type commandType, Type resultType)
             {
-                var method = typeof(ICommandInvoker).GetMethod(nameof(commandInvoker.Invoke)).MakeGenericMethod(resultType, commandType);
-                var respond = (Task) method.Invoke(commandInvoker, new[] { command, CancellationToken.None });
+                var method = typeof(IMessageInvoker).GetMethod(nameof(messageInvoker.Invoke)).MakeGenericMethod(resultType, commandType);
+                var respond = (Task) method.Invoke(messageInvoker, new[] { command, CancellationToken.None });
                 respond.GetAwaiter().GetResult();
                 var result = typeof(Task<>).MakeGenericType(resultType).GetProperty(@"Result").GetValue(respond);
                 return result;

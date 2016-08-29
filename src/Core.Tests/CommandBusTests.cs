@@ -13,14 +13,14 @@ namespace kolbasik.NCommandBus.Core.Tests
     public class CommandBusTests
     {
         private readonly Fixture fixture;
-        private readonly ICommandInvoker commandInvoker;
-        private readonly CommandBus commandBus;
+        private readonly IMessageInvoker messageInvoker;
+        private readonly MessageBus messageBus;
 
         public CommandBusTests()
         {
             fixture = new Fixture();
-            commandInvoker = A.Fake<ICommandInvoker>();
-            commandBus = new CommandBus(commandInvoker);
+            messageInvoker = A.Fake<IMessageInvoker>();
+            messageBus = new MessageBus(messageInvoker);
         }
 
         [Fact]
@@ -34,7 +34,7 @@ namespace kolbasik.NCommandBus.Core.Tests
             var actual =
                 await
                     Assert.ThrowsAsync<ValidationException>(
-                        () => commandBus.Send<TestResult, TestCommand>(command)).ConfigureAwait(false);
+                        () => messageBus.Ask<TestResult, TestCommand>(command)).ConfigureAwait(false);
 
             // assert
             Assert.NotNull(actual);
@@ -50,10 +50,10 @@ namespace kolbasik.NCommandBus.Core.Tests
             var command = fixture.Create<TestCommand>();
             var expected = fixture.Create<TestResult>();
 
-            A.CallTo(() => commandInvoker.Invoke<TestResult, TestCommand>(command, CancellationToken.None)).Returns(expected);
+            A.CallTo(() => messageInvoker.Invoke<TestResult, TestCommand>(command, CancellationToken.None)).Returns(expected);
 
             // act
-            var actual = await commandBus.Send<TestResult, TestCommand>(command).ConfigureAwait(false);
+            var actual = await messageBus.Ask<TestResult, TestCommand>(command).ConfigureAwait(false);
 
             // assert
             Assert.Equal(expected, actual);
@@ -66,26 +66,26 @@ namespace kolbasik.NCommandBus.Core.Tests
             var command = fixture.Create<TestCommand>();
             var commandResult = fixture.Create<TestResult>();
 
-            var commandValidator = A.Fake<ICommandValidator>();
-            commandBus.CommandValidators.Add(commandValidator);
+            var commandValidator = A.Fake<IMessageValidator>();
+            messageBus.MessageValidators.Add(commandValidator);
 
-            var commandObserver = A.Fake<ICommandObserver>();
-            commandBus.CommandObservers.Add(commandObserver);
+            var commandObserver = A.Fake<IMessageObserver>();
+            messageBus.MessageObservers.Add(commandObserver);
 
             var actual = new List<string>();
-            A.CallTo(() => commandValidator.Validate(A<CommandContext<TestCommand, TestResult>>.Ignored))
+            A.CallTo(() => commandValidator.Validate(A<MessageContext<TestCommand, TestResult>>.Ignored))
                 .Invokes(x => actual.Add("Validate")).Returns(Task.FromResult(1));
-            A.CallTo(() => commandObserver.PreInvoke(A<CommandContext<TestCommand, TestResult>>.Ignored))
+            A.CallTo(() => commandObserver.PreInvoke(A<MessageContext<TestCommand, TestResult>>.Ignored))
                 .Invokes(x => actual.Add("PreInvoke")).Returns(Task.FromResult(1));
-            A.CallTo(() => commandInvoker.Invoke<TestResult, TestCommand>(command, CancellationToken.None))
+            A.CallTo(() => messageInvoker.Invoke<TestResult, TestCommand>(command, CancellationToken.None))
                 .Invokes(x => actual.Add("Invoke")).Returns(commandResult);
-            A.CallTo(() => commandObserver.PostInvoke(A<CommandContext<TestCommand, TestResult>>.Ignored))
+            A.CallTo(() => commandObserver.PostInvoke(A<MessageContext<TestCommand, TestResult>>.Ignored))
                 .Invokes(x => actual.Add("PostInvoke")).Returns(Task.FromResult(1));
 
             var expected = new[] {"Validate", "PreInvoke", "Invoke", "PostInvoke"};
 
             // act
-            var result = await commandBus.Send<TestResult, TestCommand>(command).ConfigureAwait(false);
+            var result = await messageBus.Ask<TestResult, TestCommand>(command).ConfigureAwait(false);
 
             // assert
             Assert.Equal(commandResult, result);

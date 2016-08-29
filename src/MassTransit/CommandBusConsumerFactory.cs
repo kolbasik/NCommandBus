@@ -8,9 +8,9 @@ namespace kolbasik.NCommandBus.MassTransit
 {
     public static class CommandBusConsumerFactory
     {
-        public static IEnumerable<IConsumer> CreateConsumers(ICommandBus commandBus, IEnumerable<Type> definitions)
+        public static IEnumerable<IConsumer> CreateConsumers(IQueryBus commandBus, IEnumerable<Type> definitions)
         {
-            var commandHandlerTypes = definitions.Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICommandHandler<,>));
+            var commandHandlerTypes = definitions.Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IQueryHandler<,>));
             foreach (var commandHandlerType in commandHandlerTypes)
             {
                 var commandType = commandHandlerType.GenericTypeArguments[0];
@@ -19,7 +19,7 @@ namespace kolbasik.NCommandBus.MassTransit
             }
         }
 
-        public static IConsumer CreateConsumer(ICommandBus commandBus, Type commandType, Type resultType)
+        public static IConsumer CreateConsumer(IQueryBus commandBus, Type commandType, Type resultType)
         {
             var consumerType = typeof(CommandBusConsumer<,>).MakeGenericType(commandType, resultType);
             var consumer = Activator.CreateInstance(consumerType, commandBus);

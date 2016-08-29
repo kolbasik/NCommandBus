@@ -19,7 +19,7 @@ namespace Web.Tests
 {
     public class CommandBusRpcTests
     {
-        private readonly CommandBusRpc commandBusRpc;
+        private readonly MessageBusHttpRpc messageBusHttpRpc;
         private readonly Fixture fixture;
         private readonly IServiceProvider serviceProvider;
 
@@ -27,7 +27,7 @@ namespace Web.Tests
         {
             fixture = new Fixture();
             serviceProvider = A.Fake<IServiceProvider>();
-            commandBusRpc = new CommandBusRpc(new CommandBus(new InProcessCommandInvoker(serviceProvider)), new MediaTypeFormatterCollection());
+            messageBusHttpRpc = new MessageBusHttpRpc(new MessageBus(new InProcessMessageInvoker(serviceProvider)), new MediaTypeFormatterCollection());
         }
 
         [Fact]
@@ -39,7 +39,7 @@ namespace Web.Tests
             A.CallTo(() => httpContext.Response.OutputStream).Returns(new MemoryStream());
 
             // act
-            await commandBusRpc.ProcessRequest(httpContext);
+            await messageBusHttpRpc.ProcessRequest(httpContext);
 
             // assert
             Assert.Equal((int) HttpStatusCode.BadRequest, httpContext.Response.StatusCode);
@@ -65,12 +65,12 @@ namespace Web.Tests
             new StreamWriter(httpContext.Request.InputStream) { AutoFlush = true }.Write(JsonConvert.SerializeObject(command));
             httpContext.Request.InputStream.Position = 0;
 
-            var commandHandler = A.Fake<ICommandHandler<TestCommand, TestResult>>();
+            var commandHandler = A.Fake<IQueryHandler<TestCommand, TestResult>>();
             A.CallTo(() => commandHandler.Handle(A<TestCommand>._, CancellationToken.None)).Returns(result);
-            A.CallTo(() => serviceProvider.GetService(typeof (ICommandHandler<TestCommand, TestResult>))).Returns(commandHandler);
+            A.CallTo(() => serviceProvider.GetService(typeof (IQueryHandler<TestCommand, TestResult>))).Returns(commandHandler);
 
             // act
-            await commandBusRpc.ProcessRequest(httpContext).ConfigureAwait(false);
+            await messageBusHttpRpc.ProcessRequest(httpContext).ConfigureAwait(false);
 
             // assert
             Assert.Equal((int) HttpStatusCode.OK, httpContext.Response.StatusCode);

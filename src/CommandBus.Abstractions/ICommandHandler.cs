@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 
 namespace kolbasik.NCommandBus.Abstractions
 {
-    public interface ICommandHandler<TCommand, TResult>
+    public interface ICommandHandler<in TCommand>
     {
-        Task<TResult> Handle(TCommand command, CancellationToken cancellationToken);
+        Task Handle(TCommand command, CancellationToken cancellationToken);
     }
 }

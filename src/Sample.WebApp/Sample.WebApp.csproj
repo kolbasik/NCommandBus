@@ -82,7 +82,7 @@
   <ItemGroup>
     <Content Include="Global.asax" />
     <Content Include="packages.config" />
-    <Content Include="CommandBus.ashx" />
+    <Content Include="MessageBus.ashx" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -103,8 +103,8 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="CommandBus.ashx.cs">
-      <DependentUpon>CommandBus.ashx</DependentUpon>
+    <Compile Include="MessageBus.ashx.cs">
+      <DependentUpon>MessageBus.ashx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

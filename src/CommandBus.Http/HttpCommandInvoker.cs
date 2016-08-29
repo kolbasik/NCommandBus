@@ -9,14 +9,14 @@ using kolbasik.NCommandBus.Abstractions;
 
 namespace kolbasik.NCommandBus.Http
 {
-    public sealed class HttpCommandInvoker : ICommandInvoker, IDisposable
+    public sealed class HttpMessageInvoker : IMessageInvoker, IDisposable
     {
-        public HttpCommandInvoker(Uri requestUri)
+        public HttpMessageInvoker(Uri requestUri)
             : this(requestUri, new HttpClientHandler(), new MediaTypeFormatterCollection())
         {
         }
 
-        public HttpCommandInvoker(Uri requestUri, HttpMessageHandler httpMessageHandler, MediaTypeFormatterCollection mediaTypeFormatterCollection)
+        public HttpMessageInvoker(Uri requestUri, HttpMessageHandler httpMessageHandler, MediaTypeFormatterCollection mediaTypeFormatterCollection)
         {
             if (requestUri == null) throw new ArgumentNullException(nameof(requestUri));
             if (httpMessageHandler == null) throw new ArgumentNullException(nameof(httpMessageHandler));
@@ -32,13 +32,47 @@ namespace kolbasik.NCommandBus.Http
         public MediaTypeFormatter MediaTypeFormatter { get; set; }
         public MediaTypeFormatterCollection MediaTypeFormatterCollection { get; }
 
-        public async Task<TResult> Invoke<TResult, TCommand>(TCommand command, CancellationToken cancellationToken)
-            where TCommand : class
-            where TResult : class
+        public void Dispose()
+        {
+            HttpClient.Dispose();
+        }
+
+        public async Task Invoke<TCommand>(TCommand command, CancellationToken cancellationToken) where TCommand : class
         {
             string requestBody = null, responseBody = null;
             var requestContent = new ObjectContent<TCommand>(command, MediaTypeFormatter);
-            requestContent.Headers.Add(@"X-RPC-CommandType", GetTypeName(typeof (TCommand)));
+            requestContent.Headers.Add(@"X-RPC-Action", @"Tell");
+            requestContent.Headers.Add(@"X-RPC-MessageType", GetTypeName(typeof(TCommand)));
+            requestBody = await requestContent.ReadAsStringAsync().ConfigureAwait(false);
+
+            var post = HttpClient.PostAsync(RequestUri.AbsoluteUri, requestContent, cancellationToken);
+            var response = await post.ConfigureAwait(false);
+            var responseContent = response.Content;
+            if (responseContent != null)
+            {
+                responseBody = await responseContent.ReadAsStringAsync().ConfigureAwait(false);
+            }
+
+            try
+            {
+                response.EnsureSuccessStatusCode();
+            }
+            catch (Exception ex)
+            {
+                throw new HttpCommandInvokerException(@"ERROR", ex)
+                {
+                    RequestContent = requestBody,
+                    ResponseContent = responseBody
+                };
+            }
+        }
+
+        public async Task<TResult> Invoke<TResult, TQuery>(TQuery query, CancellationToken cancellationToken) where TResult : class where TQuery : class
+        {
+            string requestBody = null, responseBody = null;
+            var requestContent = new ObjectContent<TQuery>(query, MediaTypeFormatter);
+            requestContent.Headers.Add(@"X-RPC-Action", @"Ask");
+            requestContent.Headers.Add(@"X-RPC-MessageType", GetTypeName(typeof(TQuery)));
             requestContent.Headers.Add(@"X-RPC-ResultType", GetTypeName(typeof(TResult)));
             requestBody = await requestContent.ReadAsStringAsync().ConfigureAwait(false);
 
@@ -71,11 +105,6 @@ namespace kolbasik.NCommandBus.Http
                 return (TResult)result;
             }
             return default(TResult);
-        }
-
-        public void Dispose()
-        {
-            HttpClient.Dispose();
         }
 
         private static Type GetType(string typeName)

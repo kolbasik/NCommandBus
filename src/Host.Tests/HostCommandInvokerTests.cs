@@ -13,13 +13,13 @@ namespace kolbasik.NCommandBus.Host.Tests
     {
         private readonly Fixture fixture;
         private readonly ServiceContainer serviceContainer;
-        private readonly InProcessCommandInvoker hostCommandInvoker;
+        private readonly InProcessMessageInvoker hostMessageInvoker;
 
         public HostCommandInvokerTests()
         {
             fixture = new Fixture();
             serviceContainer = new ServiceContainer();
-            hostCommandInvoker = new InProcessCommandInvoker(serviceContainer);
+            hostMessageInvoker = new InProcessMessageInvoker(serviceContainer);
         }
 
         [Fact]
@@ -29,13 +29,13 @@ namespace kolbasik.NCommandBus.Host.Tests
             var command = fixture.Create<TestCommand>();
             var expected = fixture.Create<TestResult>();
 
-            var commandHandler = A.Fake<ICommandHandler<TestCommand, TestResult>>();
+            var commandHandler = A.Fake<IQueryHandler<TestCommand, TestResult>>();
             A.CallTo(() => commandHandler.Handle(command, CancellationToken.None)).Returns(expected);
 
-            serviceContainer.AddService(typeof(ICommandHandler<TestCommand, TestResult>), commandHandler);
+            serviceContainer.AddService(typeof(IQueryHandler<TestCommand, TestResult>), commandHandler);
 
             // act
-            var actual = await hostCommandInvoker.Invoke<TestResult, TestCommand>(command, CancellationToken.None).ConfigureAwait(false);
+            var actual = await hostMessageInvoker.Invoke<TestResult, TestCommand>(command, CancellationToken.None).ConfigureAwait(false);
 
             // assert
             Assert.Equal(expected, actual);
@@ -51,7 +51,7 @@ namespace kolbasik.NCommandBus.Host.Tests
             var actual =
                 await
                     Assert.ThrowsAsync<InvalidOperationException>(
-                        () => hostCommandInvoker.Invoke<TestResult, TestCommand>(command, CancellationToken.None)).ConfigureAwait(false);
+                        () => hostMessageInvoker.Invoke<TestResult, TestCommand>(command, CancellationToken.None)).ConfigureAwait(false);
 
             // assert
             Assert.NotNull(actual);

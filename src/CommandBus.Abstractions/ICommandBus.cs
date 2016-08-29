@@ -5,8 +5,7 @@ namespace kolbasik.NCommandBus.Abstractions
 {
     public interface ICommandBus
     {
-        Task<TResult> Send<TResult, TCommand>(TCommand command, CancellationToken cancellationToken)
-            where TCommand : class
-            where TResult : class;
+        Task Tell<TCommand>(TCommand command, CancellationToken cancellationToken)
+            where TCommand : class;
     }
 }
