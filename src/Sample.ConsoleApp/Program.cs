@@ -79,12 +79,12 @@ namespace Sample.ConsoleApp
             var appNameResult = await messageBus.Ask<GetAppName.Result, GetAppName>(new GetAppName()).ConfigureAwait(false);
             Console.WriteLine($"AppName: {appNameResult.AppName}");
 
-            var addValues = new AddValues {A = 2, B = 3};
-            var addValuesResult = await messageBus.Ask<AddValuesResult, AddValues>(addValues).ConfigureAwait(false);
+            var addValues = new GetAddedValues {A = 2, B = 3};
+            var addValuesResult = await messageBus.Ask<GetAddedValuesResult, GetAddedValues>(addValues).ConfigureAwait(false);
             Console.WriteLine($"{addValues.A} + {addValues.B} = {addValuesResult.Result}");
 
-            var subValues = new SubValues { A = 10, B = 7 };
-            var subValuesResult = await messageBus.Ask<SubValuesResult, SubValues>(subValues).ConfigureAwait(false);
+            var subValues = new GetSubtractedValues { A = 10, B = 7 };
+            var subValuesResult = await messageBus.Ask<GetSubtractedValuesResult, GetSubtractedValues>(subValues).ConfigureAwait(false);
             Console.WriteLine($"{subValues.A} - {subValues.B} = {subValuesResult.Result}");
         }
     }

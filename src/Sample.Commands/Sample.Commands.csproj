@@ -38,12 +38,12 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="AddValues.cs" />
+    <Compile Include="GetAddedValues.cs" />
     <Compile Include="GetAppName.cs" />
-    <Compile Include="AddValuesResult.cs" />
+    <Compile Include="GetAddedValuesResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SubValues.cs" />
-    <Compile Include="SubValuesResult.cs" />
+    <Compile Include="GetSubtractedValues.cs" />
+    <Compile Include="GetSubtractedValuesResult.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

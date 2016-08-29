@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace Sample.Commands
 {
     [DataContract, Serializable]
-    public class SubValuesResult
+    public sealed class GetAddedValuesResult
     {
         [DataMember]
         public decimal Result { get; set; }

@@ -5,17 +5,17 @@ using Sample.Commands;
 
 namespace Sample.Handles
 {
-    public sealed class Calculator : IQueryHandler<AddValues, AddValuesResult>, IQueryHandler<SubValues, SubValuesResult>
+    public sealed class Calculator : IQueryHandler<GetAddedValues, GetAddedValuesResult>, IQueryHandler<GetSubtractedValues, GetSubtractedValuesResult>
     {
-        public Task<AddValuesResult> Handle(AddValues query, CancellationToken cancellationToken)
+        public Task<GetAddedValuesResult> Handle(GetAddedValues query, CancellationToken cancellationToken)
         {
-            var result = new AddValuesResult {Result = query.A + query.B};
+            var result = new GetAddedValuesResult { Result = query.A + query.B};
             return Task.FromResult(result);
         }
 
-        public Task<SubValuesResult> Handle(SubValues query, CancellationToken cancellationToken)
+        public Task<GetSubtractedValuesResult> Handle(GetSubtractedValues query, CancellationToken cancellationToken)
         {
-            var result = new SubValuesResult { Result = query.A - query.B };
+            var result = new GetSubtractedValuesResult { Result = query.A - query.B };
             return Task.FromResult(result);
         }
     }
