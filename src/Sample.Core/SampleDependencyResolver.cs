@@ -45,17 +45,44 @@ namespace Sample.Core
             return this;
         }
 
-        public SampleDependencyResolver Register(Type contractType, Type serviceType)
+        public SampleDependencyResolver Register(object instance)
         {
-            Definitions.Add(contractType);
-            ServiceContainer.AddService(contractType, (container, requiredType) => Activator.CreateInstance(serviceType));
+            var type = instance.GetType();
+            Register(type, instance);
+            foreach (var contractType in type.GetInterfaces())
+            {
+                Register(contractType, instance);
+            }
+            return this;
+        }
+
+        public SampleDependencyResolver Register(Type serviceType)
+        {
+            Register(serviceType, serviceType);
+            foreach (var contractType in serviceType.GetInterfaces())
+            {
+                Register(contractType, serviceType);
+            }
             return this;
         }
 
         public SampleDependencyResolver Register(Type contractType, object instance)
         {
-            Definitions.Add(contractType);
-            ServiceContainer.AddService(contractType, instance);
+            return Register(contractType, requiredType => instance);
+        }
+
+        public SampleDependencyResolver Register(Type contractType, Type serviceType)
+        {
+            return Register(contractType, requiredType => Activator.CreateInstance(serviceType));
+        }
+
+        public SampleDependencyResolver Register(Type contractType, Func<Type, object> factory)
+        {
+            if (!Definitions.Contains(contractType))
+            {
+                Definitions.Add(contractType);
+                ServiceContainer.AddService(contractType, (container, requiredType) => factory(requiredType));
+            }
             return this;
         }
 

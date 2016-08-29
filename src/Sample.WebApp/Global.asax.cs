@@ -4,6 +4,7 @@ using kolbasik.NCommandBus.Abstractions;
 using kolbasik.NCommandBus.Core;
 using kolbasik.NCommandBus.Host;
 using Sample.Core;
+using Sample.Handles;
 
 namespace Sample.WebApp
 {
@@ -12,8 +13,10 @@ namespace Sample.WebApp
         static Global()
         {
             var dependencyResolver = SampleDependencyResolver.Instance;
+            dependencyResolver.Register(new Shop());
             dependencyResolver.RegisterTypes(typeof(IQueryHandler<,>), Assembly.Load("Sample.Handles"));
-            dependencyResolver.Register(typeof(MessageBus), new MessageBus(new InProcessMessageInvoker(dependencyResolver.ServiceContainer)));
+            dependencyResolver.RegisterTypes(typeof(ICommandHandler<>), Assembly.Load("Sample.Handles"));
+            dependencyResolver.Register(new MessageBus(new InProcessMessageInvoker(dependencyResolver.ServiceContainer)));
         }
     }
 }

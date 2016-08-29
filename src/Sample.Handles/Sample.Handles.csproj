@@ -40,6 +40,7 @@
     <Compile Include="AppDataHandler.cs" />
     <Compile Include="Calculator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Shop.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CommandBus.Abstractions\Abstractions.csproj">

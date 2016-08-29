@@ -39,8 +39,8 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="HttpCommandInvoker.cs" />
-    <Compile Include="HttpCommandInvokerException.cs" />
+    <Compile Include="HttpMessageInvoker.cs" />
+    <Compile Include="HttpMessageInvokerException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
